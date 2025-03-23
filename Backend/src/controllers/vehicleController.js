@@ -75,3 +75,34 @@ exports.deleteVehicle = async (req, res) => {
         res.status(500).json({success: false, message: "Erro interno no servidor"});
     }
 };
+
+exports.updateVehicle = async (req, res) => {
+    try{
+        const clientID = req.params.id;   
+        const {plate, brand, model} = req.body; 
+
+        const client = await Client.findById(clientID); 
+        if(!client){    
+            return res.status(404).json({ success: false, message: "Cliente não encontrado" });
+        }
+
+        const vehicle = await Vehicle.findOne({clientID: clientID, plate: plate});
+        if(!vehicle){
+            return res.status(404).json({ success: false, message: "Veículo não encontrado" });
+        }
+
+        vehicle.brand = brand || vehicle.brand;
+        vehicle.model = model || vehicle.model;
+        
+        await vehicle.save();
+        res.status(200).json({ 
+            success: true, 
+            message: "Veículo atualizado com sucesso", 
+            vehicle: vehicle 
+        });
+
+    }catch(err){
+        console.log(err);
+        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
+    }
+};
