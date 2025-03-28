@@ -1,13 +1,13 @@
 const Reserve = require('../models/reserve');
 const Vehicle = require('../models/vehicle');
 const Client = require('../models/client');
+const Service = require('../models/service');
 
 exports.createReserve = async (req, res) => {
     try{
 
         const clientID = req.params.id;
-        const {plate, date, time} = req.body;
-        console.log(clientID, plate, date, time);
+        const {serviceID, plate, date, time} = req.body;
 
         // Validações básicas
         if (!clientID || !plate || !date || !time) {
@@ -24,9 +24,15 @@ exports.createReserve = async (req, res) => {
             return res.status(404).json({sucess:false, message: "Veículo não encontrado"});
         }
 
+        const service = await Service.findById(serviceID);
+        if(!service){
+            return res.status(404).json({sucess:false, message: "Serviço não encontrado"});
+        }
+
         const reserve = new Reserve({ 
             clientID: client._id,
             vehicleID: vehicle._id,
+            serviceID: service._id,
             date,
             time,
             status: "pending"
@@ -40,6 +46,16 @@ exports.createReserve = async (req, res) => {
             reserve: reserve
         });
 
+    }catch(err){
+        console.log(err);
+        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
+    }
+}
+
+exports.getAllReserves = async (req, res) => {
+    try{
+        const reserves = await Reserve.find();
+        res.status(200).json({sucess: true, reserves: reserves});
     }catch(err){
         console.log(err);
         res.status(500).json({sucess: false, message: "Erro interno no servidor"});

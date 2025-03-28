@@ -21,6 +21,9 @@ app.use('/vehicle', vehicleRoute);
 const reserveRoute = require('./routes/reserveRoute');
 app.use('/reserve', reserveRoute);
 
+const serviceRoute = require('./routes/serviceRoute');
+app.use('/service', serviceRoute);
+
 app.get('/', (req, res) => {
     res.send('Oficina Mecânica');
 });

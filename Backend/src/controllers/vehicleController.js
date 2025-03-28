@@ -3,7 +3,8 @@ const Vehicle = require('../models/vehicle');
 
 exports.createVehicle = async (req, res) => {
     try{
-        const {clientID, plate, brand, model} = req.body
+        const clientID = req.params.id;
+        const {plate, brand, model} = req.body
 
         const client = await Client.findById(clientID);
         if(!client){
