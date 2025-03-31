@@ -7,7 +7,7 @@ const clientSchema = new mongoose.Schema({
 }); 
 
 //Middleware que remove os veículos quando um cliente é removido
-clientSchema.pre('deleteOne', {document: true, query: false}, async function (next) {
+clientSchema.pre('findOneAndDelete', async function (next) {
     try {
         console.log(`Removendo veículos do cliente ${this._id}`);
         await Vehicle.deleteMany({clientID: this._id});

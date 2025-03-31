@@ -14,17 +14,47 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.pre('save', async function (next){
-    
-    if(!this.isModified('password')) return next();
 
-    try{
-        this.password = await bcrypt.hash(this.password, 10);
+    if (!this.isModified('password') && !this.isModified('email')) return next();
+
+    try {
+        
+        if(this.isModified('email')){
+            const existingUser = await mongoose.model('Users').findOne({ email: this.email });
+
+            if(existingUser){
+                return next(new Error('Já existe uma conta com este email.'));
+            }
+        }
+        
+        // Se a senha foi modificada, criptografa antes de salvar
+        if (this.isModified('password')) {
+            this.password = await bcrypt.hash(this.password, 10);
+        }
+
         next();
-    }catch(err){
-        console.log('Erro ao criptografar a senha');
+    } catch (err) {
+        console.log('Erro ao verificar email ou criptografar senha:', err);
         next(err);
     }
-    
 });
+
+/* TOIMP in case
+userSchema.pre('updateOne', async function (next){
+
+    const update = this.getUpdate(); // Recebe os valores que estão a ser atulizados
+    
+    if(!update.email) return next(); // Caso o email não tenha sido alterado, continua normalmente
+
+    // Verifica se já existe outro usuário com o mesmo email
+    const existingUser = await mongoose.model('Users').findOne({ email: update.email });
+
+    if (existingUser) {
+        return next(new Error('Já existe uma conta com este email'));
+    }
+
+    next();
+
+}); */
 
 module.exports = mongoose.model('Users', userSchema);
