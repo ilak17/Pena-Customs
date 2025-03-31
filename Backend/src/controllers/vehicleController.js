@@ -3,10 +3,9 @@ const Vehicle = require('../models/vehicle');
 
 exports.createVehicle = async (req, res) => {
     try{
-        const clientID = req.params.id;
         const {plate, brand, model} = req.body
 
-        const client = await Client.findById(clientID);
+        const client = await Client.findById(req.user._id);
         if(!client){
             return res.status(404).json({sucess:false, message: "Cliente não encontrado"});
         }
@@ -46,6 +45,22 @@ exports.getAllVehicles = async (req, res) => {
     }
 };
 
+exports.getAllMyVehicles = async (req, res) => {
+    try{
+        const user = Client.findById(req.user._id);
+        if(!user) return res.status(404).json({sucess: false, message: "Cliente não encontrado"});
+
+        const vehicles = await Vehicle.find({clientID: user._id});
+        if(!vehicles) return res.status(404).json({sucess: false, message: "Veículo(s) não encontrado(s)"});
+       
+        res.status(200).json({sucess: true, message: vehicles});
+
+    }catch(err){
+        console.log(err);
+        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
+    }
+};
+
 exports.getVehicleById = async (req, res) => {
     try{
         const vehicle = await Vehicle.findById(req.params.id);
@@ -63,7 +78,10 @@ exports.getVehicleById = async (req, res) => {
 
 exports.deleteVehicle = async (req, res) => {
     try {
-        const vehicle = await Vehicle.findById(req.params.id);
+        const client = Client.findById(req.user._id);
+        if(!client) return res.status(404).json({ success: false, message: "Cliente não encontrado" });
+        
+        const vehicle = await Vehicle.findOne({_id: req.params.id, clientID: client._id});
         if (!vehicle) {
             return res.status(404).json({success: false, message: "Veículo não encontrado"});
         }
@@ -78,19 +96,14 @@ exports.deleteVehicle = async (req, res) => {
 };
 
 exports.updateVehicle = async (req, res) => {
-    try{
-        const clientID = req.params.id;   
+    try{ 
         const {plate, brand, model} = req.body; 
 
-        const client = await Client.findById(clientID); 
-        if(!client){    
-            return res.status(404).json({ success: false, message: "Cliente não encontrado" });
-        }
+        const client = await Client.findById(req.user._id); 
+        if(!client) return res.status(404).json({ success: false, message: "Cliente não encontrado" });
 
-        const vehicle = await Vehicle.findOne({clientID: clientID, plate: plate});
-        if(!vehicle){
-            return res.status(404).json({ success: false, message: "Veículo não encontrado" });
-        }
+        const vehicle = await Vehicle.findOne({clientID: client._id, plate: plate});
+        if(!vehicle) return res.status(404).json({ success: false, message: "Veículo não encontrado" });
 
         vehicle.brand = brand || vehicle.brand;
         vehicle.model = model || vehicle.model;

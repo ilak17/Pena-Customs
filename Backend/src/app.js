@@ -6,14 +6,14 @@ require('dotenv').config();
 app.use(express.json());
 
 // Rotas
+const authRoute = require('./routes/authRoute');
+app.use('/auth', authRoute);
+
 const adminRoute = require('./routes/adminRoute');
 app.use('/admin', adminRoute);
 
 const userRoute = require('./routes/userRoute');
 app.use('/user', userRoute);
-
-const clientRoute = require('./routes/clientRoute');
-app.use('/client', clientRoute);
 
 const vehicleRoute = require('./routes/vehicleRoute');
 app.use('/vehicle', vehicleRoute);
@@ -25,7 +25,7 @@ const serviceRoute = require('./routes/serviceRoute');
 app.use('/service', serviceRoute);
 
 app.get('/', (req, res) => {
-    res.send('Oficina Mecânica');
+    res.send('Pena Customns');
 });
 
 module.exports = app;
