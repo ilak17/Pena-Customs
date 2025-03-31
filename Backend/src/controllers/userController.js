@@ -1,5 +1,6 @@
 const User = require('../models/user');
 
+// Controlador usado para o Admin obter todos os utilizadores
 exports.getAllUsers = async (req, res) => {
     try{
         const user = await User.find();
@@ -11,15 +12,16 @@ exports.getAllUsers = async (req, res) => {
     }
 }
 
-exports.getUserById = async (req, res) => {
+// Controlador usado para o Utilizador obter os seus dados pessoais
+exports.getUserAuth = async (req, res) => {
     try{
-        const user = await User.findById(req.user._id);
-        if(!user) return res.status(404).json({ sucess: false, message: "Utilizador não encontrado" });
+        /* const user = await User.findById(req.user._id);
+           if(!user) return res.status(404).json({ sucess: false, message: "Utilizador não encontrado" }); */
         
         res.status(200).json({
             sucess: true,
             message: "Utilizador encontrado com sucesso",
-            client: user
+            client: req.user /*user*/
         });
     }catch(err){
         console.log(err);
@@ -27,39 +29,59 @@ exports.getUserById = async (req, res) => {
     }
 }
 
-exports.deleteUser = async (req, res) => {
+// Controlador usado para o Utilizador atualizar os seus dados pessoais
+exports.updateUserAuth = async (req, res) => {
     try{
-        const user = await User.findById(req.user._id);
-        if(!user) return res.status(404).json({ sucess: false, message: "Utilizador não encontrado" });
+
+        const {name, phone, email} = req.body;
+        const user = req.user;
+       
+        // Atualiza os dados do Utilizador
+        user.name = name || user.name;
+        user.phone = phone || user.phone;
+        user.email = email || user.email;
+
+        /* Atualiza os dados do Utilziador na Base de Dados, ativando o Middleware
+           Foi decidido usar o 'save' e não '*update*', para reutilização de código */
+        await user.save();
+
+        /* TOIMP in case 
+        await User.updateOne(
+            { _id: user._id }, 
+            { name: user.name, 
+              phone: user.phone,
+              email: user.email 
+            }
+        ); */
+
+        res.status(200).json({ success: true, message: "Utilizador atualizado com sucesso", user: user });
+
+    }catch(err){
+        console.log(err);
         
+        if (err instanceof Error && err.message) { //Captura mensagens de erro personalizadas
+            return res.status(400).json({ success: false, message: err.message });
+        }
+        
+        res.status(500).json({sucess: false, message: "Erro interno do servidor" });
+    }
+};
+
+// Controlador usado para caso o Utilizador queira excluir o seu perfil 
+exports.deleteUserAuth = async (req, res) => {
+    try{
+        const user = req.user;
+        
+        /* Remove o Utilizador da base de dados
+           Foi realizada a verificação do discriminator, pois caso seja 'Clients', ativa o seu Middleware prensete em client.js */
         if(user.__t === 'Clients'){
-            await user.deleteOne()
+            await User.findOneAndDelete({ _id: user._id });
         }else{
             await User.findByIdAndDelete(user._id);
         }
 
         res.status(200).json({ sucess: true, message: "Utilizador removido com sucesso" });
 
-    }catch(err){
-        console.log(err);
-        res.status(500).json({ sucess: false, message: "Erro interno do servidor" });
-    }
-};
-
-exports.updateUser = async (req, res) => {
-    try{
-        const {name, phone, email} = req.body;
-        const userID = req.user._id;
-        
-        const user = await User.findById(userID);
-        if(!user) return res.status(404).json({ success: false, message: "Utilizador não encontrado" });
-
-        user.name = name || user.name;
-        user.phone = phone || user.phone;
-        user.email = email || user.email;
-
-        await user.save();
-        res.status(200).json({ success: true, message: "Utilizador atualizado com sucesso", user: user });
     }catch(err){
         console.log(err);
         res.status(500).json({ sucess: false, message: "Erro interno do servidor" });

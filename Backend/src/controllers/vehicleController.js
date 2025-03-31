@@ -1,21 +1,59 @@
 const Client = require('../models/client');
 const Vehicle = require('../models/vehicle');
 
+// Controlador usado para o Admin obter todos os veícluos
+exports.getAllVehicles = async (req, res) => {
+    try{
+        const vehicle = await Vehicle.find();
+        res.status(200).json({ sucess: true, message: vehicle });
+    }catch(err){
+        console.log(err);
+        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
+    }
+};
+
+// Controlador usado para o Cliente obter todos os seus veículos
+exports.getAllMyVehicles = async (req, res) => {
+    try{
+        const vehicle = await Vehicle.find({clientID: req.user._id});
+        if(!vehicle) return res.status(404).json({sucess: false, message: "Veículo(s) não encontrado(s)"});
+       
+        res.status(200).json({sucess: true, message: vehicle});
+
+    }catch(err){
+        console.log(err);
+        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
+    }
+};
+
+// Controlador para o Cliente obter os dados do seu Veículo
+exports.getMyVehicle = async (req, res) => {
+    try{
+
+        //verifica a existência de veículos através da Matrícula na fica do Cliente
+        const vehicle = await Vehicle.findOne({clientID: req.user._id, plate: req.params.plate});
+        if(!vehicle) return res.status(404).json({sucess: false, message: "Veículo não encontrado"});
+
+        res.status(200).json({
+            sucess: true,
+            message: "Veículo encontrado com sucesso",
+            vehicle: vehicle
+        });
+        
+    }catch(err){
+        console.log(err);
+        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
+    }
+};
+
+// Controlador usado para o Cliente criar um veículo
 exports.createVehicle = async (req, res) => {
     try{
         const {plate, brand, model} = req.body
 
-        const client = await Client.findById(req.user._id);
-        if(!client){
-            return res.status(404).json({sucess:false, message: "Cliente não encontrado"});
-        }
-
-        // Verifica se já existe um veículo com esta placa
-        const existingVehicle = await Vehicle.findOne({plate});
-        if(existingVehicle){
-            return res.status(400).json({sucess:false, message: "Este veículo já está cadastrado" });
-        }
-
+        const client = req.user;
+        
+        const clientID = client._id;
         const vehicle = new Vehicle({clientID, plate, brand, model});
         await vehicle.save();
 
@@ -31,76 +69,22 @@ exports.createVehicle = async (req, res) => {
 
     }catch(err){
         console.log(err);
-        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
-    }
-};
 
-exports.getAllVehicles = async (req, res) => {
-    try{
-        const vehicle = await Vehicle.getAllVehicles();
-        res.status(200).json(vehicle);
-    }catch(err){
-        console.log(err);
-        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
-    }
-};
-
-exports.getAllMyVehicles = async (req, res) => {
-    try{
-        const user = Client.findById(req.user._id);
-        if(!user) return res.status(404).json({sucess: false, message: "Cliente não encontrado"});
-
-        const vehicles = await Vehicle.find({clientID: user._id});
-        if(!vehicles) return res.status(404).json({sucess: false, message: "Veículo(s) não encontrado(s)"});
-       
-        res.status(200).json({sucess: true, message: vehicles});
-
-    }catch(err){
-        console.log(err);
-        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
-    }
-};
-
-exports.getVehicleById = async (req, res) => {
-    try{
-        const vehicle = await Vehicle.findById(req.params.id);
-        if(!vehicle) return res.status(404).json({sucess: false, message: "Veículo não encontrado"});
-        res.status(200).json({
-            sucess: true,
-            message: "Veículo encontrado com sucesso",
-            vehicle: vehicle
-        });
-    }catch(err){
-        console.log(err);
-        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
-    }
-};
-
-exports.deleteVehicle = async (req, res) => {
-    try {
-        const client = Client.findById(req.user._id);
-        if(!client) return res.status(404).json({ success: false, message: "Cliente não encontrado" });
-        
-        const vehicle = await Vehicle.findOne({_id: req.params.id, clientID: client._id});
-        if (!vehicle) {
-            return res.status(404).json({success: false, message: "Veículo não encontrado"});
+        if (err instanceof Error && err.message) { //Captura mensagens de erro personalizadas
+            return res.status(400).json({ success: false, message: err.message });
         }
 
-        await vehicle.deleteOne(); // Chama o middleware para remover o veículo do cliente
-
-        res.status(200).json({success: true, message: "Veículo excluído com sucesso"});
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({success: false, message: "Erro interno no servidor"});
+        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
     }
 };
 
-exports.updateVehicle = async (req, res) => {
+// Controlador para o Cliente atualizar os dados do seu Veículo
+exports.updateMyVehicle = async (req, res) => {
     try{ 
-        const {plate, brand, model} = req.body; 
+        const {brand, model} = req.body; 
+        const plate = req.params.plate;
 
-        const client = await Client.findById(req.user._id); 
-        if(!client) return res.status(404).json({ success: false, message: "Cliente não encontrado" });
+        const client = req.user; 
 
         const vehicle = await Vehicle.findOne({clientID: client._id, plate: plate});
         if(!vehicle) return res.status(404).json({ success: false, message: "Veículo não encontrado" });
@@ -109,6 +93,7 @@ exports.updateVehicle = async (req, res) => {
         vehicle.model = model || vehicle.model;
         
         await vehicle.save();
+        
         res.status(200).json({ 
             success: true, 
             message: "Veículo atualizado com sucesso", 
@@ -118,5 +103,22 @@ exports.updateVehicle = async (req, res) => {
     }catch(err){
         console.log(err);
         res.status(500).json({sucess: false, message: "Erro interno no servidor"});
+    }
+};
+
+// Controlador para o Cliente eliminar os dados do seu Veículo
+exports.deleteVehicle = async (req, res) => {
+    try {
+        const client = req.user;
+
+        const vehicle = await Vehicle.findOne({clientID: client._id, plate: req.params.plate});
+        if(!vehicle) return res.status(404).json({success: false, message: "Veículo não encontrado"});
+
+        await vehicle.deleteOne(); // Chama o middleware para remover o veículo do cliente
+
+        res.status(200).json({success: true, message: "Veículo excluído com sucesso"});
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({success: false, message: "Erro interno no servidor"});
     }
 };
