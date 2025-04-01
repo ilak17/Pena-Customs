@@ -1,7 +1,14 @@
 const mongoose = require('mongoose');
+const {v4: uuidv4} = require('uuid');
 
 const serviceSchema = new mongoose.Schema({
 
+    sku: { // Gera automaticamente um SKU único para cada Serviço criado
+        type: String, 
+        unique: true, 
+        required: true, 
+        default: () => uuidv4().split('-')[0]
+    },
     name: {type: String, required: true},
     price: {type: Number, required: true},
     description: {type: String, required: true},
