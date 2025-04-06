@@ -27,9 +27,14 @@ exports.getServiceBySku = async (req, res) =>{
 exports.createService = async (req, res) => {
     try{
         const {name, price, description} = req.body;
-        
+        let estimatedTime = req.body.estimatedTime;
+
+        if(!name  || !price || !description || !estimatedTime){
+            return res.status(400).json({ sucess: false, message: "Preencha os valores obrigatórios" });
+        }
+
         const status = "available";
-        const service = new Service({name, price, description, status});
+        const service = new Service({name, price, description, estimatedTime, status});
 
         await service.save();
 
@@ -48,7 +53,7 @@ exports.createService = async (req, res) => {
 exports.updateService = async (req, res) => {
     try{
         const id = req.params.id;
-        const {name, price, description, status} = req.body;
+        const {name, price, description, estimatedTime, status} = req.body;
 
         const service = await Service.findOne({_id: id});
         if(!service) return res.status(404).json({ sucess: false, message: "Serviço não encontrado" });
@@ -56,6 +61,7 @@ exports.updateService = async (req, res) => {
         service.name = name || service.name;
         service.price = price || service.price;
         service.description = description || service.description;
+        service.estimatedTime = estimatedTime || service.estimatedTime;
         service.status = status || service.status;
 
         await service.save();
