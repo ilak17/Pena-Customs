@@ -1,52 +1,43 @@
 const mongoose = require('mongoose');
+const {v4: uuidv4} = require('uuid');
+const Service = require('./service');
 
 const reserveSchema = new mongoose.Schema({
 
     clientID: {type: mongoose.Schema.Types.ObjectId, ref: 'Clients'},
     vehicleID: {type: mongoose.Schema.Types.ObjectId, ref: 'Vehicles'},
-    serviceID: {type: mongoose.Schema.Types.ObjectId, ref: 'Services'},
-    dateTime: {type: Date, required: true},
+    serviceID: [{type: mongoose.Schema.Types.ObjectId, ref: 'Services'}],
+    sku: {
+        type: String, 
+        unique: true, 
+        required: true, 
+        default: () => uuidv4().split('-')[0] // [a-z0-9]{8}
+    },
+    startTime: {type: Date, required: true},
+    endTime: {type: Date, required: true},
     status: {type: String, enum: ["pending", "confirmed", "cancelled"], required: true}
 
+},{
+    timestamps: true
 });
 
 reserveSchema.pre('save', async function (next){
-    const oneHourBefore = new Date(this.dateTime);
-    oneHourBefore.setHours(oneHourBefore.getHours() - 1);
-
-    const oneHourAfter = new Date(this.dateTime);
-    oneHourAfter.setHours(oneHourAfter.getHours() + 1);
-
-    // Verifica se existe qualquer reserva dentro do intervalo de 1 hora
-    const existingReservation = await mongoose.model('Reserves').findOne({
-        dateTime: { $gt: oneHourBefore, $lt: oneHourAfter }
-    });
-
-    if (existingReservation) return next(new Error('Já existe uma reserva dentro do intervalo de 1 hora.'));
-
-    next();
-});
-
-reserveSchema.pre('updateOne', async function (next){
-
-    const update = this.getUpdate(); // Recebe os dados que estão sendo atualizados
     
-    if (!update.dateTime) return next(); // Se a data não foi alterada, continua normalmente
-
-    const oneHourBefore = new Date(update.dateTime);
-    oneHourBefore.setHours(oneHourBefore.getHours() - 1);
-
-    const oneHourAfter = new Date(update.dateTime);
-    oneHourAfter.setHours(oneHourAfter.getHours() + 1);
-
-    const existingReservation = await mongoose.model('Reserves').findOne({
-        _id: { $ne: this.getQuery()._id }, // Ignora a reserva que está sendo atualizada
-        dateTime: { $gt: oneHourBefore, $lt: oneHourAfter }
+    if(!this.isModified('startTime') || !this.isModified('endTime')) return next(); // Se a data não foi alterada, continua normalmente
+    
+    const overlapping = await mongoose.model('Reserves').countDocuments({
+        _id: { $ne: this._id },
+        startTime: { $lt: this.endTime },
+        endTime: { $gt: this.startTime },
+        status: { $ne: 'cancelled' } // Ignora reservas canceladas
     });
-
-    if (existingReservation) return next(new Error('Já existe uma reserva dentro do intervalo de 1 hora.'));
+    
+    if(overlapping >= process.env.MAX_RESERVE_OVERLAP){
+        return next(new Error('Horário indisponível: máximo de 2 reservas simultâneas.'));
+    }
 
     next();
+
 });
 
 module.exports = mongoose.model('Reserves', reserveSchema);
