@@ -7,11 +7,12 @@ const serviceSchema = new mongoose.Schema({
         type: String, 
         unique: true, 
         required: true, 
-        default: () => uuidv4().split('-')[0]
+        default: () => uuidv4().split('-')[1] // [a-z0-9]{4}
     },
     name: {type: String, required: true},
     price: {type: Number, required: true},
     description: {type: String, required: true},
+    estimatedTime: {type: String, required: true},
     status: {type: String, enum: ["available", "unavailable"], required: true}
 
 });
