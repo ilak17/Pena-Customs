@@ -2,34 +2,54 @@ const Reserve = require('../models/reserve');
 const Vehicle = require('../models/vehicle');
 const Client = require('../models/client');
 const Service = require('../models/service');
+const reserveUtil = require('../utils/reserveUtil');
+
+exports.getAllReserves = async (req, res) => {
+    try{
+        const reserves = await Reserve.find();
+        res.status(200).json({sucess: true, message: reserves});
+    }catch(err){
+        console.log(err);
+        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
+    }
+}
+
+exports.getReserveBySKU = async (req, res) => {
+    try{
+        const sku = req.params.sku;
+        const reserve = await Reserve.findOne({sku: sku});
+
+        if(!reserve) return res.status(404).json({sucess:false, message: "Reserva não encontrado"});
+
+        res.status(200).json({sucess: true, reserves: reserve});
+
+    }catch(err){
+        console.log(err);
+        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
+    }
+}
 
 exports.createReserve = async (req, res) => {
     try{
-
-        const clientID = req.params.id;
-        const {serviceID, plate, dateTime} = req.body;
+        const client = req.user;
+        const {serviceSKU, plate, dateTime} = req.body;
 
         // Validações básicas
-        if (!clientID || !serviceID || !plate || !dateTime) {
+        if (!serviceSKU || !plate || !dateTime) {
             return res.status(400).json({ success: false, message: "Todos os campos são obrigatórios" });
         }
         
-        const client = await Client.findById(clientID);
-        if(!client) return res.status(404).json({sucess:false, message: "Cliente não encontrado"});
-
-        const vehicle = await Vehicle.findOne({clientID: clientID, plate: plate});
+        const vehicle = await Vehicle.findOne({clientID: client._id, plate: plate});
         if(!vehicle) return res.status(404).json({sucess:false, message: "Veículo não encontrado"});
         
-
-        const service = await Service.findById(serviceID);
-        if(!service) return res.status(404).json({sucess:false, message: "Serviço não encontrado"});
-        
+        const {serviceIDs, startTime, endTime} = await reserveUtil.calculateReserveData(serviceSKU, dateTime);
 
         const reserve = new Reserve({ 
             clientID: client._id,
             vehicleID: vehicle._id,
-            serviceID: service._id,
-            dateTime,
+            serviceID: serviceIDs,
+            startTime,
+            endTime,
             status: "pending"
         });
         
@@ -43,52 +63,33 @@ exports.createReserve = async (req, res) => {
 
     }catch(err){
         console.log(err);
-        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
-    }
-}
-
-exports.getAllReserves = async (req, res) => {
-    try{
-        const reserves = await Reserve.find();
-        res.status(200).json({sucess: true, reserves: reserves});
-    }catch(err){
-        console.log(err);
-        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
-    }
-}
-
-exports.getReserveById = async (req, res) => {
-    try{
-        const reserveID = req.params;
-        const reserve = await Reserve.findById(reserveID);
-
-        if(!reserve) return res.status(404).json({sucess:false, message: "Reserva não encontrado"});
-
-        res.status(200).json({sucess: true, reserves: reserve});
-
-    }catch(err){
-        console.log(err);
+        if (err instanceof Error && err.message) { //Captura mensagens de erro personalizadas
+            return res.status(400).json({ success: false, message: err.message });
+        }
         res.status(500).json({sucess: false, message: "Erro interno no servidor"});
     }
 }
 
 exports.updateReserve = async (req, res) => {
     try{
-        console.log("AQUIiiiii\n");
+        const sku = req.params.sku;
+        const {startTime, endTime, status} = req.body;
 
-        const reserveID = req.params.id;
-        const {dateTime, status} = req.body;
-
-        const reserve = await Reserve.findById(reserveID);
+        const reserve = await Reserve.findOne({sku: sku}).populate('serviceID');
         if(!reserve) return res.status(404).json({sucess:false, message: "Reserva não encontrado"}); 
-        
-        reserve.dateTime = dateTime || reserve.dateTime;
-        reserve.status = status || reserve.status;
 
-        await reserve.updateOne({
-            dateTime: reserve.dateTime,
-            status: reserve.status
-        });
+        const serviceSKUs = reserve.serviceID.map(service => service.sku);
+        
+        if (startTime) {
+            const {startTime: newStartTime, endTime: newEndTime } = await reserveUtil.calculateReserveData(serviceSKUs, startTime);
+            reserve.startTime = newStartTime;
+            reserve.endTime = newEndTime;
+        }
+
+        if(endTime) reserve.endTime = new Date(endTime);
+        if(status) reserve.status = status;
+
+        await reserve.save();
 
         res.status(200).json({sucess: true, message: "Reserva atualizada com sucesso", reserve: reserve});
 
@@ -100,7 +101,7 @@ exports.updateReserve = async (req, res) => {
 
 exports.daleteReserve= async (req, res) => {
     try{
-        const reserve = await Reserve.findById(req.params.id);
+        const reserve = await Reserve.findOne({sku: req.params.sku});
         if(!reserve) return res.status(404).json({ sucess: false, message: "Reserva não encontrada" });
             
         await Reserve.findByIdAndDelete(reserve._id);
