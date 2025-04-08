@@ -17,7 +17,13 @@ exports.getAllReserves = async (req, res) => {
 exports.getReserveBySKU = async (req, res) => {
     try{
         const sku = req.params.sku;
-        const reserve = await Reserve.findOne({sku: sku});
+        const reserve = await Reserve.findOne({
+            $or: [
+                { clientID: req.user._id },
+                { __t: "Admins" }
+            ],
+            sku: sku
+        });
 
         if(!reserve) return res.status(404).json({sucess:false, message: "Reserva não encontrado"});
 
@@ -32,7 +38,7 @@ exports.getReserveBySKU = async (req, res) => {
 exports.createReserve = async (req, res) => {
     try{
         const client = req.user;
-        const {serviceSKU, plate, dateTime} = req.body;
+        const {serviceSKU, plate, dateTime, addComent} = req.body;
 
         // Validações básicas
         if (!serviceSKU || !plate || !dateTime) {
@@ -50,6 +56,7 @@ exports.createReserve = async (req, res) => {
             serviceID: serviceIDs,
             startTime,
             endTime,
+            addComent,
             status: "pending"
         });
         
@@ -99,7 +106,7 @@ exports.updateReserve = async (req, res) => {
     }
 }
 
-exports.daleteReserve= async (req, res) => {
+exports.daleteReserve = async (req, res) => {
     try{
         const reserve = await Reserve.findOne({sku: req.params.sku});
         if(!reserve) return res.status(404).json({ sucess: false, message: "Reserva não encontrada" });

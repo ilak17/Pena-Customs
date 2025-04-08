@@ -6,7 +6,7 @@ const { authenticateUser, isAdmin } = require('../middlewares/authMiddleware');
 router.get('/', authenticateUser, isAdmin, reserveController.getAllReserves);
 router.get('/:sku', reserveController.getReserveBySKU);
 router.post('/', authenticateUser, reserveController.createReserve);
-router.put('/:sku', isAdmin, reserveController.updateReserve);
-router.delete('/:sku', reserveController.daleteReserve);
+router.put('/:sku', authenticateUser, isAdmin, reserveController.updateReserve);
+router.delete('/:sku', authenticateUser, reserveController.daleteReserve);
 
 module.exports = router;

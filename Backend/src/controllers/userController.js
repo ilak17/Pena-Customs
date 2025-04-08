@@ -2,15 +2,30 @@ const User = require('../models/user');
 
 // Controlador usado para o Admin obter todos os utilizadores
 exports.getAllUsers = async (req, res) => {
-    try{
-        const user = await User.find();
-        res.status(200).json({ sucess: true, message: user });
+    try {
+        const {s, sortBy = 'name', order = 'asc'} = req.query;
 
-    }catch(err){
+        let query = {};
+        if (s) {
+            query = {
+                $or: [
+                    { name: new RegExp(s, 'i') },
+                    { email: new RegExp(s, 'i') }
+                ]
+            };
+        }
+
+        const sortOrder = order === 'desc' ? -1 : 1;
+
+        const users = await User.find(query).sort({ [sortBy]: sortOrder });
+
+        res.status(200).json({ success: true, users });
+
+    } catch(err){
         console.log(err);
-        res.status(500).json({ sucess:false, message: "Erro interno do servidor" });
+        res.status(500).json({ success: false, message: "Erro interno do servidor" });
     }
-}
+};
 
 // Controlador usado para o Utilizador obter os seus dados pessoais
 exports.getUserAuth = async (req, res) => {
