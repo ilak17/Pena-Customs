@@ -1,3 +1,24 @@
+const nodemailer = require('nodemailer');
+
+exports.sendEmail = async (to, subject, html) => {
+
+  const transporter = nodemailer.createTransport({
+      service: 'Gmail',
+      auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS
+      }
+  });
+
+  await transporter.sendMail({
+      from: `"Pena Customs" <${process.env.EMAIL_USER}>`,
+      to,
+      subject,
+      html
+  });
+
+};
+
 exports.parseDuration = (input) => {
   try {
     const regex = /(?:(\d+)d)?-?(?:(\d+)h)?-?(?:(\d+)m)?/;
@@ -14,3 +35,4 @@ exports.parseDuration = (input) => {
     throw new Error("Formato inválido para duração. Use o formato: dd-hh-mm");
   }
 };
+

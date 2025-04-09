@@ -9,7 +9,8 @@ const userSchema = new mongoose.Schema({
         match: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/,
     },
     password: {type: String, required: true},
-    //role: {type: String, enum: ["admin", "client"], required: true}
+    isVerified: { type: Boolean, default: false },
+    verificationToken: { type: String }
 
 });
 
