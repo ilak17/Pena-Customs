@@ -4,7 +4,25 @@ const Vehicle = require('../models/vehicle');
 // Controlador usado para o Admin obter todos os veícluos
 exports.getAllVehicles = async (req, res) => {
     try{
-        const vehicle = await Vehicle.find();
+
+        const {s, sortBy = 'plate', order = 'asc'} = req.query;
+
+        let query = {};
+        if(s){
+            query = {
+                $or: [
+                    { plate: new RegExp(s, 'i') },
+                    { brand: new RegExp(s, 'i') },
+                    { model: new RegExp(s, 'i') }
+                ]
+            };
+        }
+
+        const sortOrder = order === 'desc' ? -1 : 1;
+        const vehicle = await Vehicle.find(query).sort({ [sortBy]: sortOrder });
+
+        if(!vehicle) return res.status(404).json({ sucess: false, message: "Veículo(s) não encontrado(s)" });
+
         res.status(200).json({ sucess: true, message: vehicle });
     }catch(err){
         console.log(err);

@@ -17,7 +17,8 @@ exports.getAllUsers = async (req, res) => {
 
         const sortOrder = order === 'desc' ? -1 : 1;
 
-        const users = await User.find(query).sort({ [sortBy]: sortOrder });
+        const users = await User.find(query).sort({ [sortBy]: sortOrder }).populate('vehicles');
+        if (!users) return res.status(404).json({ success: false, message: "Utilizadores não encontrados" });
 
         res.status(200).json({ success: true, users });
 

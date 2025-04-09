@@ -6,7 +6,27 @@ const reserveUtil = require('../utils/reserveUtil');
 
 exports.getAllReserves = async (req, res) => {
     try{
-        const reserves = await Reserve.find();
+
+        const {s, sortBy = 'startTime', order = 'asc'} = req.query;
+        
+        let query = {};
+        if(s){
+            query = {
+                $or: [
+                    { sku: new RegExp(s, 'i') },
+                    { clientID: new RegExp(s, 'i') },
+                    { vehicleID: new RegExp(s, 'i') },
+                    { serviceID: new RegExp(s, 'i') },
+                    { status: new RegExp(s, 'i') }
+                ]
+            };
+        }
+
+        const sortOrder = order === 'desc' ? -1 : 1;
+
+        const reserves = await Reserve.find(query).sort({ [sortBy]: sortOrder }).populate('clientID').populate('vehicleID').populate('serviceID');
+        if(!reserves) return res.status(404).json({sucess: false, message: "Reservas não encontradas"});
+
         res.status(200).json({sucess: true, message: reserves});
     }catch(err){
         console.log(err);
@@ -28,6 +48,34 @@ exports.getReserveBySKU = async (req, res) => {
         if(!reserve) return res.status(404).json({sucess:false, message: "Reserva não encontrado"});
 
         res.status(200).json({sucess: true, reserves: reserve});
+
+    }catch(err){
+        console.log(err);
+        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
+    }
+}
+
+exports.getMyReserves = async (req, res) => {
+    try{
+        const client = req.user;
+
+        const {s, sortBy = 'startTime', order = 'asc'} = req.query;
+
+        let query = {clientID: client._id};
+        if(s){
+            query = {
+                $or: [
+                    { sku: new RegExp(s, 'i') },
+                    { vehicleID: new RegExp(s, 'i') },
+                    { serviceID: new RegExp(s, 'i') },
+                    { status: new RegExp(s, 'i') }
+                ]
+            };
+        }
+
+        const sortOrder = order === 'desc' ? -1 : 1;
+        const reserves = await Reserve.find(query).sort({ [sortBy]: sortOrder }).populate('clientID').populate('vehicleID').populate('serviceID');
+        if(!reserves) return res.status(404).json({sucess: false, message: "Reservas não encontradas"});
 
     }catch(err){
         console.log(err);
@@ -106,7 +154,7 @@ exports.updateReserve = async (req, res) => {
     }
 }
 
-exports.daleteReserve = async (req, res) => {
+exports.deleteReserve = async (req, res) => {
     try{
         const reserve = await Reserve.findOne({sku: req.params.sku});
         if(!reserve) return res.status(404).json({ sucess: false, message: "Reserva não encontrada" });

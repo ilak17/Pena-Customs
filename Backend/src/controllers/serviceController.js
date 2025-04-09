@@ -2,7 +2,22 @@ const Service = require('../models/service');
 
 exports.getAllServices = async (req, res) => {
     try{
-        const service = await Service.find();
+        const {s, sortBy = 'name', order = 'asc'} = req.query;
+
+        let query = {};
+        if(s){
+            query = {
+                $or: [
+                    { name: new RegExp(s, 'i') },
+                    { sku: new RegExp(s, 'i') }
+                ]
+            };
+        }
+
+        const sortOrder = order === 'desc' ? -1 : 1;
+        const service = await Service.find(query).sort({ [sortBy]: sortOrder });
+        if(!service) return res.status(404).json({ sucess: false, message: "Serviços não encontrado" });
+
         res.status(201).json({ sucess: true, message: service });
     }catch(err){
         console.log(err);
