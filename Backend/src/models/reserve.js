@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const {v4: uuidv4} = require('uuid');
-const Service = require('./service');
 
 const reserveSchema = new mongoose.Schema({
 

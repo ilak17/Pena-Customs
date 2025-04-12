@@ -29,9 +29,9 @@ exports.getServiceBySku = async (req, res) =>{
     try{
         const sku = req.params.sku;
 
-        const service = Service.findOne({sku: sku});
+        const service = await Service.findOne({sku: sku});
         if(!service) return res.status(404).json({ sucess: false, message: "Serviço não encontrado" });
-
+        
         res.status(200).json({ sucess: true, message: service });
     }catch(err){
         console.log(err);

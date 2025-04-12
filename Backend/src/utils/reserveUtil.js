@@ -11,7 +11,7 @@ exports.calculateReserveData = async (serviceSKU, dateTime) => {
         const service = await Service.findOne({sku: sku});
         if(!service) throw new Error(`Serviço com SKU ${sku} não encontrado`);
         serviceIDs.push(service._id);
-
+        
         estimatedTime = univUtils.parseDuration(service.estimatedTime);
         totalDuration += estimatedTime;
     }

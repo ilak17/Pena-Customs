@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
     name: {type: String, required: true},
     phone: {type: Number},
     email: {type: String, required: true, unique: true,
-        match: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/,
+        match: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
     },
     password: {type: String, required: true},
     isVerified: { type: Boolean, default: false },
