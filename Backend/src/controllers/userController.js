@@ -1,6 +1,6 @@
 const User = require('../models/user');
 const univUtil = require('../utils/univUtil');
-const emailTemplates = require('../utils/emailTemplates');
+const regNpassTemplates = require('../utils/emailTemplates/regNpassTemplates');
 const jwt = require('jsonwebtoken');
 
 // Controlador usado para o Admin obter todos os utilizadores
@@ -62,7 +62,7 @@ exports.requestPasswordReset = async (req, res) => {
         );
 
         const resetLink = `${process.env.BASE_URL}/auth/reset/${resetToken}`;
-        const resetPassMail = emailTemplates.passwordResetEmail({ userName: user.name, resetLink });
+        const resetPassMail = regNpassTemplates.passwordResetEmail({ userName: user.name, resetLink });
 
         await univUtil.sendEmail(
             user.email,

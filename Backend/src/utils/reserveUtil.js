@@ -1,5 +1,6 @@
 const Service = require('../models/service');
 const univUtils = require('../utils/univUtil');
+const reserveStatusTemplate = require('../utils/emailTemplates/reserveStatusTemplate');
 
 exports.calculateReserveData = async (serviceSKU, dateTime) => {
 
@@ -22,4 +23,78 @@ exports.calculateReserveData = async (serviceSKU, dateTime) => {
     const endTime = new Date(startTime.getTime() + totalDuration);
 
     return {serviceIDs, startTime, endTime};
+};
+
+exports.sendStatusEmail = async ({reserveStatus, reserveSKU, reserveEndTime, clientEmail, clientName}) => {
+    try{
+        switch (reserveStatus){
+            
+            case "pending": {
+                console.log("AQUI1");
+                const pendingMail = reserveStatusTemplate.repairPendingEmail({clientName, reserveSKU});
+                await univUtils.sendEmail(
+                    clientEmail,
+                    "Alteração do estado da reparação",
+                    pendingMail
+                );
+                console.log("EMAIL ENVIADO");
+
+                break;
+            }
+
+            case "confirmed": {
+                const confirmedMail = reserveStatusTemplate.repairConfirmedEmail({clientName, reserveSKU, reserveEndTime});
+                await univUtils.sendEmail(
+                    clientEmail,
+                    "Alteração do estado da reparação",
+                    confirmedMail
+                );
+                break;
+            }
+                
+            case "running": {
+                const runningMail = reserveStatusTemplate.repairRunningEmail({clientName, reserveSKU});
+                await univUtils.sendEmail(
+                    clientEmail,
+                    "Alteração do estado da reparação",
+                    runningMail
+                );
+                break;
+            }
+            
+            case "waiting": {
+                const repairWaitingMail = reserveStatusTemplate.repairWaitingEmail({clientName, reserveSKU});
+                await univUtils.sendEmail(
+                    clientEmail,
+                    "Alteração do estado da reparação",
+                    repairWaitingMail
+                );
+                break;
+            }
+
+            case "completed": {
+                const completedMail = reserveStatusTemplate.repairCompletedEmail({clientName, reserveSKU});
+                await univUtils.sendEmail(
+                    clientEmail,
+                    "Alteração do estado da reparação",
+                    completedMail
+                );
+                break;
+            }
+
+            case "cancelled": {
+                const cancelledMail = reserveStatusTemplate.repairCancelledEmail({clientName, reserveSKU});
+                await univUtils.sendEmail(
+                    clientEmail,
+                    "Alteração do estado da reparação",
+                    cancelledMail
+                );
+                break;
+            }
+        }
+
+    }catch(err){
+        console.log(err);
+        throw new Error("Erro ao enviar email");
+    }
 };

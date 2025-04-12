@@ -108,6 +108,15 @@ exports.createReserve = async (req, res) => {
         
         await reserve.save();
 
+        await reserve.populate('clientID', 'name email'); // necessário se quiseres email
+
+        await reserveUtil.sendStatusEmail({
+            reserveStatus: reserve.status, 
+            reserveSKU: reserve.sku,
+            clientName: reserve.clientID.name,
+            clientEmail: reserve.clientID.email
+        });
+
         res.status(201).json({
             sucess: true,
             message: "Reserva guardada com sucesso",
@@ -128,7 +137,10 @@ exports.updateReserve = async (req, res) => {
         const sku = req.params.sku;
         const {startTime, endTime, status} = req.body;
 
-        const reserve = await Reserve.findOne({sku: sku}).populate('serviceID');
+        const reserve = await Reserve.findOne({ sku })
+            .populate({ path: 'clientID', select: 'name email' })
+            .populate('serviceID');        
+            
         if(!reserve) return res.status(404).json({sucess:false, message: "Reserva não encontrado"}); 
 
         const serviceSKUs = reserve.serviceID.map(service => service.sku);
@@ -140,7 +152,10 @@ exports.updateReserve = async (req, res) => {
         }
 
         if(endTime) reserve.endTime = new Date(endTime);
-        if(status) reserve.status = status;
+        if(status && status != "pending"){
+            reserve.status = status;
+            await reserveUtil.sendStatusEmail(reserve.status, reserve.sku, reserve.endTime, reserve.clientID.email, reserve.clientID.name);
+        } 
 
         await reserve.save();
 
@@ -148,6 +163,9 @@ exports.updateReserve = async (req, res) => {
 
     }catch(err){
         console.log(err);
+        if (err instanceof Error && err.message) {
+            return res.status(400).json({ success: false, message: err.message });
+        }
         res.status(500).json({sucess: false, message: "Erro interno no servidor"});
     }
 }

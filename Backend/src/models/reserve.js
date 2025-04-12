@@ -15,7 +15,7 @@ const reserveSchema = new mongoose.Schema({
     startTime: {type: Date, required: true},
     endTime: {type: Date, required: true},
     addComents: {type: String, required: false},
-    status: {type: String, enum: ["pending", "confirmed", "cancelled", "running", "completed"], required: true}
+    status: {type: String, enum: ["pending", "confirmed", "running", "waiting", "completed", "cancelled"], required: true}
 
 },{
     timestamps: true
