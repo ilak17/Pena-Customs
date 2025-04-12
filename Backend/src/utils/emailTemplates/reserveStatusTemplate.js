@@ -20,7 +20,7 @@ exports.repairPendingEmail = ({ clientName, reserveSKU }) => {
             </div>
             </body>
         </html>
-        `;
+    `;
 };
 
 exports.repairConfirmedEmail = ({ clientName, reserveSKU, reserveEndTime }) => {
