@@ -21,12 +21,20 @@ exports.sendEmail = async (to, subject, html) => {
 
 exports.parseDuration = (input) => {
   try{
-    const regex = /(?:(\d+)d)?-?(?:(\d+)h)?-?(?:(\d+)m)?/;
+    const regex = /^(\d+d)?(?:-(\d+h))?(?:-(\d+m))?$|^(\d+h)?(?:-(\d+m))?$|^(\d+m)$/;
+    
+    if (!regex.test(input)) {
+      throw new Error();
+    }
 
-    const match = input.match(regex);
-    if (!match) throw new Error();
+    // Extrai os valores de dias, horas e minutos
+    const dMatch = input.match(/(\d+)d/);
+    const hMatch = input.match(/(\d+)h/);
+    const mMatch = input.match(/(\d+)m/);
 
-    const [, d, h, m] = match.map(v => parseInt(v) || 0);
+    const d = dMatch ? parseInt(dMatch[1]) : 0;
+    const h = hMatch ? parseInt(hMatch[1]) : 0;
+    const m = mMatch ? parseInt(mMatch[1]) : 0;
 
     return ((d * 24 * 60 * 60) + (h * 60 * 60) + (m * 60)) * 1000;
 

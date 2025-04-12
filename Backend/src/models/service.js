@@ -12,7 +12,9 @@ const serviceSchema = new mongoose.Schema({
     name: {type: String, required: true},
     price: {type: Number, required: true},
     description: {type: String, required: true},
-    estimatedTime: {type: String, required: true},
+    estimatedTime: {type: String, required: false, 
+        match: /^(\d+d)?(?:-(\d+h))?(?:-(\d+m))?$|^(\d+h)?(?:-(\d+m))?$|^(\d+m)$/
+    },
     status: {type: String, enum: ["available", "unavailable"], required: true}
 
 });
