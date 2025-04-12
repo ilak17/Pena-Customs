@@ -4,8 +4,8 @@ const Vehicle = require('./vehicle');
 
 const clientSchema = new mongoose.Schema({
     vehicles: [{type: mongoose.Schema.Types.ObjectId, ref: 'vehicles'}],
-    isVerified: { type: Boolean, default: false },
-    verificationToken: { type: String }
+    isVerified: {type: Boolean, default: false},
+    verificationToken: {type: String}
 }); 
 
 //Middleware que remove os veículos quando um cliente é removido

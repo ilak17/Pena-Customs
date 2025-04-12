@@ -3,11 +3,19 @@ const Client = require('../models/client');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const univUtil = require('../utils/univUtil');
-const emailTemplates = require('../utils/emailTemplates');
+const regNpassTemplates = require('../utils/emailTemplates/regNpassTemplates');
 
 exports.register = async (req, res) => {
     try {
-        const {name, phone, email, password} = req.body;
+        const {name, phone, email, password, confirmPassword} = req.body;
+
+        if (!password || !confirmPassword) {
+            return res.status(400).json({ success: false, message: "Password e confirmação são obrigatórias" });
+        }else 
+          
+        if (password !== confirmPassword) {
+            return res.status(400).json({ success: false, message: "Passwords não coincidem" });
+        }
 
         const client = new Client({
             name, phone, email, password,
@@ -23,7 +31,7 @@ exports.register = async (req, res) => {
         );
 
         const verifyLink = `${process.env.BASE_URL}/auth/verify/${verifyToken}`;
-        const verifyMail = emailTemplates.confirmRegistrationEmail({ userName: client.name, verifyLink });
+        const verifyMail = regNpassTemplates.confirmRegistrationEmail({ userName: client.name, verifyLink });
 
         await univUtil.sendEmail(
             client.email,
