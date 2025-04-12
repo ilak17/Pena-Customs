@@ -20,7 +20,7 @@ exports.sendEmail = async (to, subject, html) => {
 };
 
 exports.parseDuration = (input) => {
-  try {
+  try{
     const regex = /(?:(\d+)d)?-?(?:(\d+)h)?-?(?:(\d+)m)?/;
 
     const match = input.match(regex);
@@ -30,9 +30,9 @@ exports.parseDuration = (input) => {
 
     return ((d * 24 * 60 * 60) + (h * 60 * 60) + (m * 60)) * 1000;
 
-  } catch (err) {
+  }catch(err){
     console.log(err);
-    throw new Error("Formato inválido para duração. Use o formato: dd-hh-mm");
+    throw new Error("Formato inválido para duração. Use o formato: ?d-?h-?m");
   }
 };
 

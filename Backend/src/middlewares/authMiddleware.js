@@ -30,7 +30,6 @@ exports.authenticateUser = async (req, res, next) =>{
 /* Middleware para verificar se o utilizador autenticado é Admin
    Este middleware deve ser usado apenas em rotas que requerem acesso de administrador */
 exports.isAdmin = (req, res, next) => {
-
     if(req.user && req.user.__t === "Admins"){
       return next();
     }else{

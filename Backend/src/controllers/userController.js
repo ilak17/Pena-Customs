@@ -1,4 +1,7 @@
 const User = require('../models/user');
+const univUtil = require('../utils/univUtil');
+const emailTemplates = require('../utils/emailTemplates');
+const jwt = require('jsonwebtoken');
 
 // Controlador usado para o Admin obter todos os utilizadores
 exports.getAllUsers = async (req, res) => {
@@ -42,6 +45,36 @@ exports.getUserAuth = async (req, res) => {
     }catch(err){
         console.log(err);
         res.status(500).json({ sucess:false, message: "Erro interno do servidor" });
+    }
+}
+
+exports.requestPasswordReset = async (req, res) => {
+    try{
+        const { email } = req.body;
+        const user = await User.findOne({email: email});
+        
+        if(!user) return res.status(404).json({ sucess: false, message: "Utilizador não encontrado" }); 
+
+        const resetToken = jwt.sign(
+            { email: user.email },
+            process.env.JWT_SECRET,
+            { expiresIn: '5min' }
+        );
+
+        const resetLink = `${process.env.BASE_URL}/auth/reset/${resetToken}`;
+        const resetPassMail = emailTemplates.passwordResetEmail({ userName: user.name, resetLink });
+
+        await univUtil.sendEmail(
+            user.email,
+            "Alteração de Password",
+            resetPassMail
+        );
+
+        res.status(200).json({ success: true, message: "Link de alteração enviado para o email" });
+
+    }catch(err){
+        console.log(err);
+        res.status(500).json({ sucess: false, message: "Erro interno do servidor" });
     }
 }
 

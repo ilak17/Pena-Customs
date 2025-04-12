@@ -16,8 +16,10 @@ exports.calculateReserveData = async (serviceSKU, dateTime) => {
         totalDuration += estimatedTime;
     }
 
+    totalDuration += univUtils.parseDuration(process.env.EXTRA_TIME);
+
     const startTime = new Date(dateTime);
-    const endTime = new Date(startTime.getTime() + totalDuration + Number(process.env.EXTRA_TIME));
+    const endTime = new Date(startTime.getTime() + totalDuration);
 
     return {serviceIDs, startTime, endTime};
 };

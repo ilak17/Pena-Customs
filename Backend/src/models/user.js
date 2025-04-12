@@ -10,7 +10,6 @@ const userSchema = new mongoose.Schema({
     },
     password: {type: String, required: true},
     isVerified: { type: Boolean, default: false },
-    verificationToken: { type: String }
 
 });
 
@@ -28,7 +27,7 @@ userSchema.pre('save', async function (next){
             }
         }
         
-        // Se a senha foi modificada, criptografa antes de salvar
+        // Se a password foi modificada, criptografa antes de salvar
         if (this.isModified('password')) {
             this.password = await bcrypt.hash(this.password, 10);
         }
