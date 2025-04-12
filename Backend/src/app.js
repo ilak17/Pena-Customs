@@ -6,6 +6,9 @@ require('dotenv').config();
 app.use(express.json());
 
 // Rotas
+const reportRoute = require('./routes/reportRoute');
+app.use('/report', reportRoute);
+
 const authRoute = require('./routes/authRoute');
 app.use('/auth', authRoute);
 

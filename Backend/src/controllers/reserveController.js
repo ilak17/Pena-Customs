@@ -135,7 +135,7 @@ exports.createReserve = async (req, res) => {
 exports.updateReserve = async (req, res) => {
     try{
         const sku = req.params.sku;
-        const {startTime, endTime, status} = req.body;
+        const {startTime, endTime, addComent, status} = req.body;
 
         const reserve = await Reserve.findOne({ sku })
             .populate({ path: 'clientID', select: 'name email' })
@@ -152,6 +152,9 @@ exports.updateReserve = async (req, res) => {
         }
 
         if(endTime) reserve.endTime = new Date(endTime);
+
+        if(addComent) reserve.addComents = addComent;
+
         if(status && status != "pending"){
             reserve.status = status;
             await reserveUtil.sendStatusEmail(reserve.status, reserve.sku, reserve.endTime, reserve.clientID.email, reserve.clientID.name);
