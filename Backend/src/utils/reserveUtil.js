@@ -27,83 +27,65 @@ exports.calculateReserveData = async (serviceSKU, dateTime) => {
     return {serviceIDs, startTime, endTime};
 };
 
-exports.sendStatusEmail = async ({reserveStatus, reserveSKU, reserveEndTime, clientEmail, clientName}) => {
-    try{
-        switch (reserveStatus){
+exports.sendStatusEmail = async ({ reserveStatus, reserveSKU, reserveEndTime, clientEmail, clientName }) => {
+    try {
+        let subject;
+        let mail;
+
+        switch (reserveStatus) {
 
             case "pending": {
-                console.log("AQUI1");
-                const pendingMail = reserveStatusTemplate.repairPendingEmail({clientName, reserveSKU});
-                await univUtils.sendEmail(
-                    clientEmail,
-                    "Alteração do estado da reparação",
-                    pendingMail
-                );
-                console.log("EMAIL ENVIADO");
-
+                subject = "Recebemos o seu pedido de reparação";
+                mail = reserveStatusTemplate.repairPendingEmail({ clientName, reserveSKU });
                 break;
             }
 
             case "confirmed": {
-                const confirmedMail = reserveStatusTemplate.repairConfirmedEmail({clientName, reserveSKU, reserveEndTime});
-                await univUtils.sendEmail(
-                    clientEmail,
-                    "Alteração do estado da reparação",
-                    confirmedMail
-                );
+                subject = "Reparação Confirmada";
+                mail = reserveStatusTemplate.repairConfirmedEmail({ clientName, reserveSKU, reserveEndTime });
                 break;
             }
-                
+
             case "running": {
-                const runningMail = reserveStatusTemplate.repairRunningEmail({clientName, reserveSKU});
-                await univUtils.sendEmail(
-                    clientEmail,
-                    "Alteração do estado da reparação",
-                    runningMail
-                );
+                subject = "Reparação em Execução";
+                mail = reserveStatusTemplate.repairRunningEmail({ clientName, reserveSKU });
                 break;
             }
-            
+
             case "waiting": {
-                const repairWaitingMail = reserveStatusTemplate.repairWaitingEmail({clientName, reserveSKU});
-                await univUtils.sendEmail(
-                    clientEmail,
-                    "Alteração do estado da reparação",
-                    repairWaitingMail
-                );
+                subject = "Reparação em Espera";
+                mail = reserveStatusTemplate.repairWaitingEmail({ clientName, reserveSKU });
                 break;
             }
 
             case "completed": {
-                const completedMail = reserveStatusTemplate.repairCompletedEmail({clientName, reserveSKU});
+                subject = "Reparação Concluída";
+                mail = reserveStatusTemplate.repairCompletedEmail({ clientName, reserveSKU });
 
                 const reserve = await Reserve.findOne({ sku: reserveSKU })
                     .populate('clientID')
                     .populate('serviceID');
 
                 const pdfPath = await pdfUtil.generateClientRepairReportPDF(reserve);
-                
-                await univUtils.sendEmail(
-                    clientEmail,
-                    "Alteração do estado da reparação",
-                    completedMail,
-                    pdfPath
-                );
-                break;
+
+                await univUtils.sendEmail(clientEmail, subject, mail, pdfPath);
+                return;
             }
 
             case "cancelled": {
-                const cancelledMail = reserveStatusTemplate.repairCancelledEmail({clientName, reserveSKU});
-                await univUtils.sendEmail(
-                    clientEmail,
-                    "Alteração do estado da reparação",
-                    cancelledMail
-                );
+                subject = "Reparação Cancelada";
+                mail = reserveStatusTemplate.repairCancelledEmail({ clientName, reserveSKU });
                 break;
+            }
+
+            default: {
+                throw new Error(`Estado de reparação desconhecido: ${reserveStatus}`);
             }
         }
 
-    }catch(err){
+        await univUtils.sendEmail(clientEmail, subject, mail);
+
+    } catch (err) {
         console.log(err);
         throw new Error("Erro ao enviar email");
     }
