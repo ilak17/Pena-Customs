@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
+const path = require('path');
 
-exports.sendEmail = async (to, subject, html) => {
+exports.sendEmail = async (to, subject, html, attachmentPath = null) => {
 
   const transporter = nodemailer.createTransport({
       service: 'Gmail',
@@ -10,12 +11,21 @@ exports.sendEmail = async (to, subject, html) => {
       }
   });
 
-  await transporter.sendMail({
+  const mailOptions = {
       from: `"Pena Customs" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html
-  });
+  };
+
+  if (attachmentPath) {
+    mailOptions.attachments = [{
+      filename: path.basename(attachmentPath),
+      path: attachmentPath
+    }];
+  }
+
+  await transporter.sendMail(mailOptions);
 
 };
 
@@ -43,4 +53,3 @@ exports.parseDuration = (input) => {
     throw new Error("Formato inválido para duração. Use o formato: ?d-?h-?m");
   }
 };
-

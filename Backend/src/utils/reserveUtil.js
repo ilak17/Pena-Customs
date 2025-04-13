@@ -1,6 +1,8 @@
 const Service = require('../models/service');
 const univUtils = require('../utils/univUtil');
 const reserveStatusTemplate = require('../utils/emailTemplates/reserveStatusTemplate');
+const Reserve = require('../models/reserve');
+const pdfUtil = require('../utils/pdfUtil');
 
 exports.calculateReserveData = async (serviceSKU, dateTime) => {
 
@@ -74,10 +76,18 @@ exports.sendStatusEmail = async ({reserveStatus, reserveSKU, reserveEndTime, cli
 
             case "completed": {
                 const completedMail = reserveStatusTemplate.repairCompletedEmail({clientName, reserveSKU});
+
+                const reserve = await Reserve.findOne({ sku: reserveSKU })
+                    .populate('clientID')
+                    .populate('serviceID');
+
+                const pdfPath = await pdfUtil.generateClientRepairReportPDF(reserve);
+                
                 await univUtils.sendEmail(
                     clientEmail,
                     "Alteração do estado da reparação",
-                    completedMail
+                    completedMail,
+                    pdfPath
                 );
                 break;
             }

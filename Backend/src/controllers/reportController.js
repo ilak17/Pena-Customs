@@ -28,7 +28,7 @@ exports.getServiceReportPDF = async (req, res) => {
                         count: 0,
                         totalRevenue: 0,
                         totalTime: 0,
-                        executions: []  // 👈 lista com start/endTime
+                        executions: [] 
                     };
                 }
 

@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 exports.generateServiceReportPDF = (reportData, options = {}) => {
-    const reportsDir = path.join(__dirname, '..', 'reports');
+    const reportsDir = path.join(__dirname, '..', 'reports', 'admin_reports');
 
     if (!fs.existsSync(reportsDir)) {
         fs.mkdirSync(reportsDir);
@@ -113,6 +113,70 @@ exports.generateServiceReportPDF = (reportData, options = {}) => {
         doc.moveDown(2);
         doc.fontSize(14).font('Helvetica-Bold').text('Total de Receita:');
         doc.fontSize(12).font('Helvetica').text(`€${totalRevenue.toFixed(2)}`);
+        doc.end();
+    });
+};
+
+exports.generateClientRepairReportPDF = (reserve) => {
+    const clientDir = path.join(__dirname, '..', 'reports', 'clientes');
+
+    if (!fs.existsSync(clientDir)) {
+        fs.mkdirSync(clientDir, { recursive: true });
+    }
+
+    const date = new Date();
+    const formattedDate = `${String(date.getDate()).padStart(2, '0')}_${String(date.getMonth() + 1).padStart(2, '0')}_${date.getFullYear()}`;
+    const filename = `cliente_relatorio_${reserve.sku}_${formattedDate}.pdf`;
+    const filePath = path.join(clientDir, filename);
+
+    const doc = new PDFDocument();
+    const fileStream = fs.createWriteStream(filePath);
+
+    return new Promise((resolve, reject) => {
+        doc.pipe(fileStream)
+            .on('finish', () => resolve(filePath))
+            .on('error', (err) => reject(err));
+
+        // Header
+        const logoPath = path.join(__dirname, '..', 'assets', 'pena_customs_logo.png');
+        if (fs.existsSync(logoPath)) {
+            doc.image(logoPath, 50, 20, { width: 100 });
+        }
+
+        doc.moveDown(2);
+        doc.fontSize(18).font('Helvetica-Bold').text('Relatório da Reparação', { align: 'center' });
+        doc.moveDown();
+
+        // Dados principais
+        doc.fontSize(12).font('Helvetica').fillColor('#000');
+        doc.text(`Nome do Cliente: ${reserve.clientID.name}`);
+        doc.text(`Email: ${reserve.clientID.email}`);
+        doc.text(`SKU da Reserva: ${reserve.sku}`);
+        doc.text(`Data de Conclusão: ${new Date(reserve.endTime).toLocaleString()}`);
+
+        const durationMin = ((new Date(reserve.endTime) - new Date(reserve.startTime)) / (1000 * 60)).toFixed(0);
+        doc.text(`Tempo total de reparação: ${durationMin} minutos`);
+        doc.moveDown();
+
+        // Serviços
+        let total = 0;
+        doc.fontSize(13).font('Helvetica-Bold').text('Serviços Realizados:');
+        doc.font('Helvetica').fontSize(12);
+        reserve.serviceID.forEach(service => {
+            doc.text(`- ${service.name} (${service.sku}) — €${service.price.toFixed(2)}`);
+            total += service.price;
+        });
+
+        doc.moveDown();
+        doc.fontSize(13).font('Helvetica-Bold').text(`Custo Total: €${total.toFixed(2)}`);
+
+        // Comentário
+        if (reserve.addComents) {
+            doc.moveDown();
+            doc.fontSize(12).font('Helvetica-Bold').text('Comentário da Reparação:');
+            doc.font('Helvetica').text(reserve.addComents);
+        }
+
         doc.end();
     });
 };
