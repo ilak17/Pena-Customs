@@ -118,6 +118,10 @@ exports.generateServiceReportPDF = (reportData, options = {}) => {
 };
 
 exports.generateClientRepairReportPDF = (reserve) => {
+    const path = require("path");
+    const fs = require("fs");
+    const PDFDocument = require("pdfkit");
+
     const clientDir = path.join(__dirname, '..', 'reports', 'clientes');
 
     if (!fs.existsSync(clientDir)) {
@@ -129,53 +133,80 @@ exports.generateClientRepairReportPDF = (reserve) => {
     const filename = `cliente_relatorio_${reserve.sku}_${formattedDate}.pdf`;
     const filePath = path.join(clientDir, filename);
 
-    const doc = new PDFDocument();
+    const doc = new PDFDocument({ margin: 60 });
     const fileStream = fs.createWriteStream(filePath);
 
     return new Promise((resolve, reject) => {
         doc.pipe(fileStream)
             .on('finish', () => resolve(filePath))
-            .on('error', (err) => reject(err));
+            .on('error', reject);
 
-        // Header
+        const line = () => {
+            doc.moveDown(0.5);
+            doc.lineWidth(0.5).moveTo(doc.page.margins.left, doc.y).lineTo(doc.page.width - doc.page.margins.right, doc.y).stroke();
+            doc.moveDown(1);
+        };
+
+        // Logo
         const logoPath = path.join(__dirname, '..', 'assets', 'pena_customs_logo.png');
         if (fs.existsSync(logoPath)) {
-            doc.image(logoPath, 50, 20, { width: 100 });
+            doc.image(logoPath, doc.page.margins.left, 20, { width: 100 });
         }
 
+        // Título
+        doc.fontSize(20).font('Helvetica-Bold').text('Relatório da Reparação', {
+            align: 'center',
+            baseline: 'middle'
+        });
+
         doc.moveDown(2);
-        doc.fontSize(18).font('Helvetica-Bold').text('Relatório da Reparação', { align: 'center' });
-        doc.moveDown();
+        line();
 
         // Dados principais
-        doc.fontSize(12).font('Helvetica').fillColor('#000');
+        doc.fontSize(12).font('Helvetica');
         doc.text(`Nome do Cliente: ${reserve.clientID.name}`);
         doc.text(`Email: ${reserve.clientID.email}`);
         doc.text(`SKU da Reserva: ${reserve.sku}`);
         doc.text(`Data de Conclusão: ${new Date(reserve.endTime).toLocaleString()}`);
 
-        const durationMin = ((new Date(reserve.endTime) - new Date(reserve.startTime)) / (1000 * 60)).toFixed(0);
+        const durationMin = ((new Date(reserve.endTime) - new Date(reserve.startTime)) / 60000).toFixed(0);
         doc.text(`Tempo total de reparação: ${durationMin} minutos`);
+
         doc.moveDown();
+        line();
 
         // Serviços
         let total = 0;
         doc.fontSize(13).font('Helvetica-Bold').text('Serviços Realizados:');
-        doc.font('Helvetica').fontSize(12);
+        doc.moveDown(0.5);
+        doc.fontSize(12).font('Helvetica');
+
         reserve.serviceID.forEach(service => {
-            doc.text(`- ${service.name} (${service.sku}) — €${service.price.toFixed(2)}`);
+            doc.text(`• ${service.name} (${service.sku}) — €${service.price.toFixed(2)}`);
             total += service.price;
         });
 
         doc.moveDown();
         doc.fontSize(13).font('Helvetica-Bold').text(`Custo Total: €${total.toFixed(2)}`);
 
-        // Comentário
+        // Comentários
         if (reserve.addComents) {
-            doc.moveDown();
+            doc.moveDown(1.5);
             doc.fontSize(12).font('Helvetica-Bold').text('Comentário da Reparação:');
-            doc.font('Helvetica').text(reserve.addComents);
+            doc.font('Helvetica').text(reserve.addComents, {
+                align: 'justify'
+            });
         }
+
+        doc.moveDown(3);
+        line();
+
+        // Rodapé
+        doc.fontSize(10).font('Helvetica-Oblique').fillColor('gray');
+        doc.text('Obrigado por confiar na Pena Customs.', { align: 'center' });
+
+        const baseURL = process.env.BASE_URL || 'https://penacustoms.pt';
+        doc.text(`${baseURL}  •  suporte@penacustoms.pt`, { align: 'center' });
 
         doc.end();
     });

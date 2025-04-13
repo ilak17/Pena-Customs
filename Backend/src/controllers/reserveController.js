@@ -25,8 +25,9 @@ exports.getAllReserves = async (req, res) => {
         const sortOrder = order === 'desc' ? -1 : 1;
 
         const reserves = await Reserve.find(query).sort({ [sortBy]: sortOrder })
-            .populate('vehicleID')
-            .populate('serviceID')
+            .populate('clientID', 'name phone email -__t')
+            .populate('vehicleID', '-__v -clientID')
+            .populate('serviceID', '-status -__v')
         ;
         
         if(!reserves) return res.status(404).json({sucess: false, message: "Reservas não encontradas"});
@@ -41,7 +42,11 @@ exports.getAllReserves = async (req, res) => {
 exports.getReserveBySKU = async (req, res) => {
     try{
         const sku = req.params.sku;
-        const reserve = await Reserve.findOne({ clientID: req.user._id, sku: sku });
+        const reserve = await Reserve.findOne({ clientID: req.user._id, sku: sku })
+            .populate('clientID', 'name phone email -__t -_id')
+            .populate('vehicleID', '-__v -clientID -_id')
+            .populate('serviceID', '-status -__v')
+        ;
 
         if(!reserve) return res.status(404).json({sucess:false, message: "Reserva não encontrado"});
 

@@ -50,8 +50,8 @@ exports.getUserAuth = async (req, res) => {
 
 exports.requestPasswordReset = async (req, res) => {
     try{
-        const { email } = req.body;
-        const user = await User.findOne({email: email});
+        const { email, phone } = req.body;
+        const user = await User.findOne({email: email, phone: phone});
         
         if(!user) return res.status(404).json({ sucess: false, message: "Utilizador não encontrado" }); 
 
@@ -82,13 +82,16 @@ exports.requestPasswordReset = async (req, res) => {
 exports.updateUserAuth = async (req, res) => {
     try{
 
-        const {name, phone, email} = req.body;
+        const {name, phone/*, email*/} = req.body;
         const user = req.user;
        
         // Atualiza os dados do Utilizador
         user.name = name || user.name;
-        user.phone = phone || user.phone;
-        user.email = email || user.email;
+        if (phone) {
+            if(phone.length !== 9) return res.status(400).json({ success: false, message: "Número de telefone inválido" });
+            user.phone = phone;
+        }
+        //user.email = email || user.email;
 
         /* Atualiza os dados do Utilziador na Base de Dados, ativando o Middleware
            Foi decidido usar o 'save' e não '*update*', para reutilização de código */
