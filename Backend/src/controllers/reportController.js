@@ -19,7 +19,7 @@ exports.getServiceReportPDF = async (req, res) => {
         const report = {};
 
         for (const reserve of reserves) {
-            const duration = (new Date(reserve.endTime) - new Date(reserve.startTime)) / (1000 * 60);
+            const duration = (new Date(reserve.endTime) - new Date(reserve.startTime)) / (1000 * 60); // em minutos
 
             for (const service of reserve.serviceID) {
                 if (!report[service.name]) {
@@ -27,13 +27,19 @@ exports.getServiceReportPDF = async (req, res) => {
                         serviceSKU: service.sku,
                         count: 0,
                         totalRevenue: 0,
-                        totalTime: 0
+                        totalTime: 0,
+                        executions: []  // 👈 lista com start/endTime
                     };
                 }
 
                 report[service.name].count += 1;
                 report[service.name].totalRevenue += service.price;
                 report[service.name].totalTime += duration;
+
+                report[service.name].executions.push({
+                    startTime: reserve.startTime,
+                    endTime: reserve.endTime
+                });
             }
         }
 
@@ -42,14 +48,19 @@ exports.getServiceReportPDF = async (req, res) => {
             sku: data.serviceSKU,
             totalExecutions: data.count,
             totalRevenue: data.totalRevenue.toFixed(2),
-            avgExecutionTime: (data.totalTime / data.count).toFixed(2) + ' min'
+            avgExecutionTime: (data.totalTime / data.count).toFixed(2) + ' min',
+            executions: reserves
+                .filter(r => r.serviceID.some(s => s.name === name))
+                .map(r => ({
+                    startTime: r.startTime,
+                    endTime: r.endTime,
+                    sku: r.sku  // aqui adicionamos o SKU da reserva
+                }))
         }));
 
-        // Aguarda a Promise de geração do PDF
-        const pdfPath = await generateServiceReportPDF(finalReport);
+        const pdfPath = await generateServiceReportPDF(finalReport, { startDate, endDate });
         const resolvedPath = path.resolve(pdfPath);
 
-        // Verifica se o arquivo existe
         fs.access(resolvedPath, fs.constants.F_OK, (err) => {
             if (err) {
                 console.log('Arquivo não encontrado:', resolvedPath);
