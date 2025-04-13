@@ -24,7 +24,6 @@ exports.repairPendingEmail = ({ clientName, reserveSKU }) => {
 };
 
 exports.repairConfirmedEmail = ({ clientName, reserveSKU, reserveEndTime }) => {
-    console.log(clientName, reserveSKU, reserveEndTime);
     return `
         <html>
             <head><meta charset="UTF-8" /><title>Reparação Confirmada - Pena Customs</title></head>

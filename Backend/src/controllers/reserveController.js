@@ -157,7 +157,13 @@ exports.updateReserve = async (req, res) => {
 
         if(status && status != "pending"){
             reserve.status = status;
-            await reserveUtil.sendStatusEmail(reserve.status, reserve.sku, reserve.endTime, reserve.clientID.email, reserve.clientID.name);
+            await reserveUtil.sendStatusEmail({
+                reserveStatus: reserve.status, 
+                reserveSKU: reserve.sku,
+                reserveEndTime: reserve.endTime,
+                clientName: reserve.clientID.name,
+                clientEmail: reserve.clientID.email
+            });
         } 
 
         await reserve.save();

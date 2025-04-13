@@ -28,7 +28,7 @@ exports.calculateReserveData = async (serviceSKU, dateTime) => {
 exports.sendStatusEmail = async ({reserveStatus, reserveSKU, reserveEndTime, clientEmail, clientName}) => {
     try{
         switch (reserveStatus){
-            
+
             case "pending": {
                 console.log("AQUI1");
                 const pendingMail = reserveStatusTemplate.repairPendingEmail({clientName, reserveSKU});
