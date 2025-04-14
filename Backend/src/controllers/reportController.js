@@ -3,10 +3,11 @@ const path = require('path');
 const { generateServiceReportPDF } = require('../utils/pdfUtil');
 const Reserve = require('../models/reserve');
 
+// Gera um relatório em PDF com os serviços
 exports.getServiceReportPDF = async (req, res) => {
     try {
-        const { startDate, endDate } = req.query;
-        const query = { status: 'completed' };
+        const { startDate, endDate } = req.query; // Data de início e fim para o relatório (caso queira filtrar por data)
+        const query = { status: 'completed' }; // Filtra apenas reservas concluídas
 
         if (startDate || endDate) {
             query.startTime = {};
@@ -14,10 +15,11 @@ exports.getServiceReportPDF = async (req, res) => {
             if (endDate) query.startTime.$lte = new Date(endDate);
         }
 
-        const reserves = await Reserve.find(query).populate('serviceID');
+        const reserves = await Reserve.find(query).populate('serviceID'); // Pega todas as reservas com os serviços populados
 
-        const report = {};
+        const report = {}; // Objeto para armazenar os dados do relatório
 
+        // Itera sobre as reservas e acumula os dados
         for (const reserve of reserves) {
             const duration = (new Date(reserve.endTime) - new Date(reserve.startTime)) / (1000 * 60); // em minutos
 
@@ -43,6 +45,7 @@ exports.getServiceReportPDF = async (req, res) => {
             }
         }
 
+        // Formata os dados para o PDF
         const finalReport = Object.entries(report).map(([name, data]) => ({
             name,
             sku: data.serviceSKU,
@@ -61,6 +64,7 @@ exports.getServiceReportPDF = async (req, res) => {
         const pdfPath = await generateServiceReportPDF(finalReport, { startDate, endDate });
         const resolvedPath = path.resolve(pdfPath);
 
+        // Verifica se o arquivo existe antes de tentar fazer o download
         fs.access(resolvedPath, fs.constants.F_OK, (err) => {
             if (err) {
                 console.log('Arquivo não encontrado:', resolvedPath);

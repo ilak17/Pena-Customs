@@ -1,7 +1,9 @@
 const Service = require('../models/service');
 
+// Obtem todos os serviços
 exports.getAllServices = async (req, res) => {
     try{
+        // sortBy, orderBy, s são os parâmetros de pesquisa
         const {s, sortBy = 'name', order = 'asc'} = req.query;
 
         let query = {};
@@ -25,6 +27,7 @@ exports.getAllServices = async (req, res) => {
     }
 }
 
+// Obtem um serviço por SKU
 exports.getServiceBySku = async (req, res) =>{
     try{
         const sku = req.params.sku;
@@ -39,6 +42,7 @@ exports.getServiceBySku = async (req, res) =>{
     }
 }
 
+// Cria um serviço
 exports.createService = async (req, res) => {
     try{
         const {name, price, description} = req.body;
@@ -48,7 +52,7 @@ exports.createService = async (req, res) => {
             return res.status(400).json({ sucess: false, message: "Preencha os valores obrigatórios" });
         }
 
-        const status = "available";
+        const status = "available"; // status default
         const service = new Service({name, price, description, estimatedTime, status});
 
         await service.save();
@@ -65,6 +69,7 @@ exports.createService = async (req, res) => {
     }
 }
 
+// Atualiza um serviço
 exports.updateService = async (req, res) => {
     try{
         const id = req.params.id;
@@ -88,6 +93,7 @@ exports.updateService = async (req, res) => {
     }
 }
 
+//Apaga um serviço
 exports.deleteService = async (req, res) => {
     try{
         const id = req.params.id;

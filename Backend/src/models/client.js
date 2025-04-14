@@ -19,4 +19,4 @@ clientSchema.pre('findOneAndDelete', async function (next) {
     }
 });
 
-module.exports = User.discriminator('Clients', clientSchema);
+module.exports = User.discriminator('Clients', clientSchema); //Discriminator para o modelo de User, herda o esquema de User

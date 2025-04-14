@@ -48,6 +48,7 @@ exports.getUserAuth = async (req, res) => {
     }
 }
 
+// Pedido de alteraçao da password
 exports.requestPasswordReset = async (req, res) => {
     try{
         const { email, phone } = req.body;
@@ -55,12 +56,14 @@ exports.requestPasswordReset = async (req, res) => {
         
         if(!user) return res.status(404).json({ sucess: false, message: "Utilizador não encontrado" }); 
 
+        // Cria um novo token de reset de password
         const resetToken = jwt.sign(
             { email: user.email },
             process.env.JWT_SECRET,
             { expiresIn: '5min' }
         );
 
+        // Cria um novo email com um link para atualizar a password
         const resetLink = `${process.env.BASE_URL}/auth/reset/${resetToken}`;
         const resetPassMail = regNpassTemplates.passwordResetEmail({ userName: user.name, resetLink });
 

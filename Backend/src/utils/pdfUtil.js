@@ -2,6 +2,7 @@ const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
 
+/// Função para gerar o modelo PDF do relatório de serviços prestados
 exports.generateServiceReportPDF = (reportData, options = {}) => {
     const reportsDir = path.join(__dirname, '..', 'reports', 'admin_reports');
 
@@ -117,6 +118,7 @@ exports.generateServiceReportPDF = (reportData, options = {}) => {
     });
 };
 
+// Função para gerar o modelo PDF do relatório de reparação do cliente
 exports.generateClientRepairReportPDF = (reserve) => {
     const path = require("path");
     const fs = require("fs");

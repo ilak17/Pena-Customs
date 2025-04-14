@@ -4,6 +4,7 @@ const reserveStatusTemplate = require('../utils/emailTemplates/reserveStatusTemp
 const Reserve = require('../models/reserve');
 const pdfUtil = require('../utils/pdfUtil');
 
+// Calcula os dados de reserva com base no SKU do serviço e na data/hora
 exports.calculateReserveData = async (serviceSKU, dateTime) => {
 
     const serviceIDs = [];
@@ -15,11 +16,11 @@ exports.calculateReserveData = async (serviceSKU, dateTime) => {
         if(!service) throw new Error(`Serviço com SKU ${sku} não encontrado`);
         serviceIDs.push(service._id);
         
-        estimatedTime = univUtils.parseDuration(service.estimatedTime);
+        estimatedTime = univUtils.parseDuration(service.estimatedTime); // Converte a duração para milissegundos
         totalDuration += estimatedTime;
     }
 
-    totalDuration += univUtils.parseDuration(process.env.EXTRA_TIME);
+    totalDuration += univUtils.parseDuration(process.env.EXTRA_TIME); // Adiciona o tempo extra definido no .env
 
     const startTime = new Date(dateTime);
     const endTime = new Date(startTime.getTime() + totalDuration);
@@ -27,6 +28,7 @@ exports.calculateReserveData = async (serviceSKU, dateTime) => {
     return {serviceIDs, startTime, endTime};
 };
 
+// Envia email acerca do estado do veículo
 exports.sendStatusEmail = async ({ reserveStatus, reserveSKU, reserveEndTime, clientEmail, clientName }) => {
     try {
         let subject;
@@ -58,7 +60,7 @@ exports.sendStatusEmail = async ({ reserveStatus, reserveSKU, reserveEndTime, cl
                 break;
             }
 
-            case "completed": {
+            case "completed": { // Caso a reparação tenha sido concluída envia o relatório em PDF
                 subject = "Reparação Concluída";
                 mail = reserveStatusTemplate.repairCompletedEmail({ clientName, reserveSKU });
 

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 //const Client = require("./client");
 
+//modelo do veículo
 const vehicleSchema = mongoose.Schema({
 
     clientID: {type: mongoose.Schema.Types.ObjectId, ref: 'Clients'},

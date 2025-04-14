@@ -5,10 +5,12 @@ const jwt = require('jsonwebtoken');
 const univUtil = require('../utils/univUtil');
 const regNpassTemplates = require('../utils/emailTemplates/regNpassTemplates');
 
+// Cria um novo utilizador
 exports.register = async (req, res) => {
     try {
         const {name, phone, email, password, confirmPassword} = req.body;
 
+        // Verifica se as passwords
         if (!password || !confirmPassword) {
             return res.status(400).json({ success: false, message: "Password e confirmação são obrigatórias" });
         }else 
@@ -17,6 +19,7 @@ exports.register = async (req, res) => {
             return res.status(400).json({ success: false, message: "Passwords não coincidem" });
         }
 
+        // Cria e salva um novo utilizador
         const client = new Client({
             name, phone, email, password,
             isVerified: false
@@ -24,15 +27,18 @@ exports.register = async (req, res) => {
 
         await client.save();
 
+        // Cria um token de verificação
         const verifyToken = jwt.sign(
             { email: client.email},
             process.env.JWT_SECRET,
             { expiresIn: '5min'}
         );
 
+        // Cria o email de verificação
         const verifyLink = `${process.env.BASE_URL}/auth/verify/${verifyToken}`;
         const verifyMail = regNpassTemplates.confirmRegistrationEmail({ userName: client.name, verifyLink });
 
+        // Envia o email de verificação
         await univUtil.sendEmail(
             client.email,
             "Confirmação de Registo - Pena Customs",
@@ -50,20 +56,22 @@ exports.register = async (req, res) => {
     }
 };
 
-
+// Login 
 exports.login = async (req, res) => {
     try{
         const {email, password} = req.body;
-        const user = await User.findOne({email});
+        const user = await User.findOne({email}); // Procura o utilizador
 
-        if(!user) return res.status(404).json({ success: false, message: "Utilizador não encontrado" });
+        if(!user) return res.status(404).json({ success: false, message: "Utilizador não encontrado" }); // Verifica se o utilizador existe
 
         //if(!user.isVerified) return res.status(403).json({ success: false, message: "Utilizador não encontrado" });
         if(user.__t == 'Clients' && !user.isVerified) return res.status(403).json({ success: false, message: "Email não verificado" });
 
+        // Verifica se a password está correta
         const isMatch = await bcrypt.compare(password, user.password);
         if(!isMatch) return res.status(401).json({ success: false, message: "Password errada" });
 
+        // Cria um token JWT
         const token = jwt.sign(
             {id: user._id, role: user.__t},
             process.env.JWT_SECRET,
@@ -78,15 +86,18 @@ exports.login = async (req, res) => {
     }
 };
 
+// Verifica o email do utilizador após o registo
 exports.emailVerify = async (req, res) => {
     try{
+        // Vai buscar o token e verifica se é válido
         const token = req.params.verifyToken;
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const user = await User.findOne({ email: decoded.email });
 
         if(!user) return res.status(404).json({ success: false, message: "Token inválido" });
 
-        user.isVerified = true;
+        // Atualiza o utilizador para verificado
+        user.isVerified = true; 
         await user.save();
 
         res.send("Email verificado com sucesso!");
@@ -97,16 +108,18 @@ exports.emailVerify = async (req, res) => {
     }
 };
 
+// Funçao para alterar a password
 exports.resetPassword = async (req, res) => {
     try{
         const token = req.params.resetToken;
         const { newPassword, confirmPassword } = req.body;
         
-        const decoded  = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded  = jwt.verify(token, process.env.JWT_SECRET); //descodifica o token
         
         const user = await User.findOne({ email: decoded.email });
         if (!user) return res.status(404).json({ success: false, message: "Utilizador não encontrado" });
 
+        // Verifica se as password coincidem
         if(newPassword !== confirmPassword) return res.status(400).json({ success: false, message: "As passwords não coincidem" });
 
         user.password = newPassword;

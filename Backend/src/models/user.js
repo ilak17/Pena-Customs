@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
+// Modelo de utilizador
 const userSchema = new mongoose.Schema({
 
     name: {type: String, required: true},
@@ -13,6 +14,7 @@ const userSchema = new mongoose.Schema({
 
 });
 
+// Middleware para verificar se existe outro utilizador com o mesmo email e para criptografar a password
 userSchema.pre('save', async function (next){
 
     if (!this.isModified('password') && !this.isModified('email')) return next();

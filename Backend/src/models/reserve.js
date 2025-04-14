@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const {v4: uuidv4} = require('uuid');
 
+// modelo das reservas
 const reserveSchema = new mongoose.Schema({
 
     clientID: {type: mongoose.Schema.Types.ObjectId, ref: 'Clients'},
@@ -21,10 +22,12 @@ const reserveSchema = new mongoose.Schema({
     timestamps: true
 });
 
+// Middleware para verificar se existe outra reserva com o mesmo horário
 reserveSchema.pre('save', async function (next){
     
     if(!this.isModified('startTime') || !this.isModified('endTime')) return next(); // Se a data não foi alterada, continua normalmente
     
+    // Verifica se já existe outra reserva com o mesmo horário (max. 2 reservas simultâneas)
     const overlapping = await mongoose.model('Reserves').countDocuments({
         _id: { $ne: this._id },
         startTime: { $lt: this.endTime },

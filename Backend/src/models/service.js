@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const {v4: uuidv4} = require('uuid');
 
+//modelo do serviço
 const serviceSchema = new mongoose.Schema({
 
     sku: { // Gera automaticamente um SKU único para cada Serviço criado

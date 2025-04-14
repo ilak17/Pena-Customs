@@ -4,9 +4,11 @@ const Client = require('../models/client');
 const Service = require('../models/service');
 const reserveUtil = require('../utils/reserveUtil');
 
+// Obtem todas as reservas
 exports.getAllReserves = async (req, res) => {
     try{
 
+        // sortBy, orderBy, s são os parâmetros de pesquisa
         const {s, sortBy = 'startTime', order = 'asc'} = req.query;
         
         let query = {};
@@ -39,6 +41,7 @@ exports.getAllReserves = async (req, res) => {
     }
 }
 
+// Obtem uma reserva por SKU
 exports.getReserveBySKU = async (req, res) => {
     try{
         const sku = req.params.sku;
@@ -58,10 +61,12 @@ exports.getReserveBySKU = async (req, res) => {
     }
 }
 
+// Obtem todas as reservas de um cliente
 exports.getMyReserves = async (req, res) => {
     try{
         const client = req.user;
 
+        // sortBy, orderBy, s são os parâmetros de pesquisa
         const {s, sortBy = 'startTime', order = 'asc'} = req.query;
 
         let query = {clientID: client._id};
@@ -86,6 +91,7 @@ exports.getMyReserves = async (req, res) => {
     }
 }
 
+// Criar reserva
 exports.createReserve = async (req, res) => {
     try{
         const client = req.user;
@@ -99,8 +105,9 @@ exports.createReserve = async (req, res) => {
         const vehicle = await Vehicle.findOne({clientID: client._id, plate: plate});
         if(!vehicle) return res.status(404).json({sucess:false, message: "Veículo não encontrado"});
         
-        const {serviceIDs, startTime, endTime} = await reserveUtil.calculateReserveData(serviceSKU, dateTime);
+        const {serviceIDs, startTime, endTime} = await reserveUtil.calculateReserveData(serviceSKU, dateTime); // Obtem os serviços e calcula o tempo de reserva
 
+        // Cria nova reserva e guarda na base de dados
         const reserve = new Reserve({ 
             clientID: client._id,
             vehicleID: vehicle._id,
@@ -113,8 +120,9 @@ exports.createReserve = async (req, res) => {
         
         await reserve.save();
 
-        await reserve.populate('clientID', 'name email'); // necessário se quiseres email
+        await reserve.populate('clientID', 'name email');
 
+        // Envia email da criaçao reserva
         await reserveUtil.sendStatusEmail({
             reserveStatus: reserve.status, 
             reserveSKU: reserve.sku,
@@ -137,6 +145,7 @@ exports.createReserve = async (req, res) => {
     }
 }
 
+// Atualiza reserva
 exports.updateReserve = async (req, res) => {
     try{
         const sku = req.params.sku;
@@ -148,10 +157,10 @@ exports.updateReserve = async (req, res) => {
             
         if(!reserve) return res.status(404).json({sucess:false, message: "Reserva não encontrado"}); 
 
-        const serviceSKUs = reserve.serviceID.map(service => service.sku);
+        const serviceSKUs = reserve.serviceID.map(service => service.sku); // Obtem os SKUs dos serviços da reserva
         
         if (startTime) {
-            const {startTime: newStartTime, endTime: newEndTime } = await reserveUtil.calculateReserveData(serviceSKUs, startTime);
+            const {startTime: newStartTime, endTime: newEndTime } = await reserveUtil.calculateReserveData(serviceSKUs, startTime); // Obtem os serviços e calcula o tempo de reserva
             reserve.startTime = newStartTime;
             reserve.endTime = newEndTime;
         }
@@ -160,7 +169,7 @@ exports.updateReserve = async (req, res) => {
 
         if(addComent) reserve.addComents = addComent;
 
-        if(status && status != "pending"){
+        if(status && status != "pending"){ //Envia email de atualizaçao do estado da reserva
             reserve.status = status;
             await reserveUtil.sendStatusEmail({
                 reserveStatus: reserve.status, 
@@ -184,6 +193,7 @@ exports.updateReserve = async (req, res) => {
     }
 }
 
+// Apaga a reserva
 exports.deleteReserve = async (req, res) => {
     try{
         const reserve = await Reserve.findOne({sku: req.params.sku});

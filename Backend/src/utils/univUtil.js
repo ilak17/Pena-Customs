@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
 const path = require('path');
 
+// Função para enviar e-mail
 exports.sendEmail = async (to, subject, html, attachmentPath = null) => {
 
   const transporter = nodemailer.createTransport({
@@ -29,6 +30,7 @@ exports.sendEmail = async (to, subject, html, attachmentPath = null) => {
 
 };
 
+// Funçao para validar o formato das datas e converter para milisegundos
 exports.parseDuration = (input) => {
   try{
     const regex = /^(\d+d)?(?:-(\d+h))?(?:-(\d+m))?$|^(\d+h)?(?:-(\d+m))?$|^(\d+m)$/;

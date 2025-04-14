@@ -4,7 +4,8 @@ const Vehicle = require('../models/vehicle');
 // Controlador usado para o Admin obter todos os veícluos
 exports.getAllVehicles = async (req, res) => {
     try{
-
+        
+        // sortBy, orderBy, s são os parâmetros de pesquisa
         const {s, sortBy = 'plate', order = 'asc'} = req.query;
 
         let query = {};

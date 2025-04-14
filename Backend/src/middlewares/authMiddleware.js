@@ -3,7 +3,7 @@ const User = require('../models/user');
 
 /* Middleware para verificar se o utilizador está autenticado
    Este middleware deve ser usado em todas as rotas que requerem autenticação */
-exports.authenticateUser = async (req, res, next) =>{
+exports.authenticateUser = async (req, res, next) => {
 
     // Verifica a presença do JWT no Header da requisição
     const authHeader = req.headers.authorization; 
