@@ -8,6 +8,6 @@ router.get('/:sku', authenticateUser, reserveController.getReserveBySKU);
 router.get('/my-reserves', authenticateUser, reserveController.getMyReserves);
 router.post('/', authenticateUser, reserveController.createReserve);
 router.put('/:sku', authenticateUser, isAdmin, reserveController.updateReserve);
-router.delete('/:sku', authenticateUser, reserveController.deleteReserve);
+router.delete('/:sku', authenticateUser, isAdmin, reserveController.deleteReserve);
 
 module.exports = router;
