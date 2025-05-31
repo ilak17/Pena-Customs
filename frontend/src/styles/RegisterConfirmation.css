@@ -1,0 +1,101 @@
+.confirmation-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.confirmation-box {
+    background-color: white;
+    padding: 2.5rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+}
+
+.logo-section {
+    margin-bottom: 2rem;
+}
+
+.confirmation-logo {
+    height: 80px;
+    width: auto;
+}
+
+.confirmation-content {
+    margin-bottom: 2rem;
+}
+
+.confirmation-content h2 {
+    color: #1a1a1a;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+}
+
+.email-icon {
+    font-size: 3rem;
+    color: rgb(146, 40, 26);
+    margin-bottom: 1.5rem;
+}
+
+.main-message {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.sub-message {
+    color: #666;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.note {
+    color: #888;
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+.action-buttons {
+    margin-top: 2rem;
+}
+
+.login-link {
+    display: inline-block;
+    padding: 0.8rem 2rem;
+    background-color: rgb(146, 40, 26);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.login-link:hover {
+    background-color: rgb(126, 34, 22);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(146, 40, 26, 0.2);
+}
+
+@media (max-width: 480px) {
+    .confirmation-box {
+        padding: 2rem;
+    }
+
+    .confirmation-logo {
+        height: 60px;
+    }
+
+    .confirmation-content h2 {
+        font-size: 1.5rem;
+    }
+
+    .main-message {
+        font-size: 1rem;
+    }
+} 

@@ -64,7 +64,7 @@ exports.requestPasswordReset = async (req, res) => {
         );
 
         // Cria um novo email com um link para atualizar a password
-        const resetLink = `${process.env.BASE_URL}/auth/reset/${resetToken}`;
+        const resetLink = `${process.env.WEB_URL}/alterar-password/${resetToken}`;
         const resetPassMail = regNpassTemplates.passwordResetEmail({ userName: user.name, resetLink });
 
         await univUtil.sendEmail(

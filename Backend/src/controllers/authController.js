@@ -100,7 +100,7 @@ exports.emailVerify = async (req, res) => {
         user.isVerified = true; 
         await user.save();
 
-        res.send("Email verificado com sucesso!");
+        res.redirect(`${process.env.WEB_URL}/email-verificado`);
 
     }catch(err){
         console.error(err);
