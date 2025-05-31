@@ -19,10 +19,10 @@ function RegisterConfirmation() {
                         Foi enviado um email de confirmação para o seu endereço de email.
                     </p>
                     <p className="sub-message">
-                        Por favor, verifique sua caixa de entrada e clique no link de verificação para ativar sua conta.
+                        Por favor, verifique a sua caixa de entrada e clique no link de verificação para ativar sua conta.
                     </p>
                     <p className="note">
-                        Não se esqueça de verificar também sua pasta de spam.
+                        Não se esqueça de verificar também a sua pasta de spam.
                     </p>
                 </div>
 

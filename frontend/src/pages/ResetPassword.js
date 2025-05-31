@@ -66,8 +66,8 @@ function ResetPassword() {
                 setError(data.message || 'Erro ao redefinir a password');
             }
         } catch (err) {
-            console.error('Erro ao conectar com o servidor:', err);
-            setError('Erro ao conectar com o servidor');
+            console.error('Erro ao ligar ao servidor:', err);
+            setError('Erro ao ligar ao servidor');
         }
     };
 
@@ -78,7 +78,7 @@ function ResetPassword() {
                     <img src="/assets/images/logo.png" alt="Pena-Customs Logo" className="recover-password-logo" />
                 </div>
                 <h2>Redefinir Password</h2>
-                <p className="recover-password-subtitle">Digite sua nova password</p>
+                <p className="recover-password-subtitle">Introduz a tua nova password</p>
 
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
@@ -103,7 +103,7 @@ function ResetPassword() {
                             value={formData.confirmPassword}
                             onChange={handleChange}
                             required
-                            placeholder="Digite a password novamente"
+                            placeholder="Digita a password novamente"
                         />
                     </div>
 

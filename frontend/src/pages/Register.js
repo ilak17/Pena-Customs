@@ -27,11 +27,11 @@ function Register() {
             return false;
         }
         if (formData.password !== formData.confirmPassword) {
-            setError('As senhas não coincidem');
+            setError('As passwords não coincidem');
             return false;
         }
         if (formData.password.length < 6) {
-            setError('A senha deve ter pelo menos 6 caracteres');
+            setError('A password deve ter pelo menos 6 caracteres');
             return false;
         }
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
@@ -65,14 +65,13 @@ function Register() {
             const data = await response.json();
 
             if (response.ok) {
-                // Redireciona para o login após registro bem-sucedido
                 navigate('/registo-confirmado');
             } else {
-                setError(data.message || 'Erro ao realizar o registro');
+                setError(data.message || 'Erro ao efetuar o registo');
             }
         } catch (err) {
-            console.error('Erro ao conectar com o servidor:', err);
-            setError('Erro ao conectar com o servidor');
+            console.error('Erro ao ligar ao servidor:', err);
+            setError('Erro ao ligar ao servidor');
         }
     };
 
@@ -83,7 +82,7 @@ function Register() {
                     <img src="/assets/images/logo.png" alt="Pena-Customs Logo" className="register-logo" />
                 </div>
                 <h2>Criar Conta</h2>
-                <p className="register-subtitle">Junte-se à Pena-Customs e transforme seu veículo</p>
+                <p className="register-subtitle">Junta-te à Pena-Customs e transforma o teu veículo</p>
                 
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
@@ -94,7 +93,7 @@ function Register() {
                             name="name"
                             value={formData.name}
                             onChange={handleChange}
-                            placeholder="Seu nome completo"
+                            placeholder="O teu nome completo"
                             required
                         />
                     </div>
@@ -107,26 +106,26 @@ function Register() {
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
-                            placeholder="Seu email"
+                            placeholder="O teu email"
                             required
                         />
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="telefone">Telefone:</label>
+                        <label htmlFor="telefone">Telemóvel:</label>
                         <input
                             type="tel"
                             id="telefone"
                             name="phone"
                             value={formData.phone}
                             onChange={handleChange}
-                            placeholder="Seu número de telefone"
+                            placeholder="O teu número de telemóvel"
                             required
                         />
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="password">Senha:</label>
+                        <label htmlFor="password">Password:</label>
                         <input
                             type="password"
                             id="password"
@@ -139,14 +138,14 @@ function Register() {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="confirmPassword">Confirmar Senha:</label>
+                        <label htmlFor="confirmPassword">Confirmar Password:</label>
                         <input
                             type="password"
                             id="confirmPassword"
                             name="confirmPassword"
                             value={formData.confirmPassword}
                             onChange={handleChange}
-                            placeholder="Digite a senha novamente"
+                            placeholder="Digita a password novamente"
                             required
                         />
                     </div>
@@ -159,9 +158,9 @@ function Register() {
                 </form>
                 
                 <div className="login-section">
-                    <p>Já possui uma conta?</p>
+                    <p>Já tens uma conta?</p>
                     <Link to="/login" className="login-link">
-                        Entre aqui
+                        Entra aqui
                     </Link>
                 </div>
             </div>

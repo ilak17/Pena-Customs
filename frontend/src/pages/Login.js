@@ -27,11 +27,11 @@ function Login() {
                 localStorage.setItem('token', data.token);
                 navigate('/');
             } else {
-                setError(data.message || 'Erro ao fazer login');
+                setError(data.message || 'Erro ao iniciar sessão');
             }
         } catch (err) {
-            console.error('Erro ao conectar com o servidor:', err);
-            setError('Erro ao conectar com o servidor');
+            console.error('Erro ao ligar ao servidor:', err);
+            setError('Erro ao ligar ao servidor');
         }
     };
 
@@ -42,7 +42,7 @@ function Login() {
                     <img src="/assets/images/logo.png" alt="Pena-Customs Logo" className="login-logo" />
                 </div>
                 <h2>Bem-vindo de volta</h2>
-                <p className="login-subtitle">Entre com suas credenciais para acessar sua conta</p>
+                <p className="login-subtitle">Introduz as tuas credenciais para aceder à tua conta</p>
                 
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
@@ -53,27 +53,25 @@ function Login() {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
-                            placeholder="Seu email"
+                            placeholder="O teu email"
                         />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="password">Senha:</label>
+                        <label htmlFor="password">Password:</label>
                         <input
                             type="password"
                             id="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                            placeholder="Sua senha"
+                            placeholder="A tua password"
                         />
                         <div className="forgot-password">
                             <Link to="/recuperar-password" className="forgot-password-link">
-                                Esqueceu-se da password?
+                                Esqueceste-te da password?
                             </Link>
                         </div>
                     </div>
-
-                    
 
                     {error && <div className="error-message">{error}</div>}
                     <button type="submit" className="login-button">
@@ -82,9 +80,9 @@ function Login() {
                 </form>
 
                 <div className="register-section">
-                    <p>Ainda não possui uma conta?</p>
+                    <p>Ainda não tens uma conta?</p>
                     <Link to="/registar" className="register-link">
-                        Registe-se aqui
+                        Regista-te aqui
                     </Link>
                 </div>
             </div>

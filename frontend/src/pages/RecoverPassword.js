@@ -26,7 +26,7 @@ function RecoverPassword() {
             const data = await response.json();
 
             if (response.ok) {
-                setSuccess('Email enviado com sucesso! Por favor, verifique sua caixa de entrada.');
+                setSuccess('Email enviado com sucesso! Por favor, verifica a tua caixa de entrada.');
                 setTimeout(() => {
                     navigate('/login');
                 }, 3000);
@@ -34,8 +34,8 @@ function RecoverPassword() {
                 setError(data.message || 'Erro ao solicitar recuperação de password');
             }
         } catch (err) {
-            console.error('Erro ao conectar com o servidor:', err);
-            setError('Erro ao conectar com o servidor');
+            console.error('Erro ao ligar ao servidor:', err);
+            setError('Erro ao ligar ao servidor');
         }
     };
 
@@ -46,7 +46,7 @@ function RecoverPassword() {
                     <img src="/assets/images/logo.png" alt="Pena-Customs Logo" className="recover-password-logo" />
                 </div>
                 <h2>Recuperar Password</h2>
-                <p className="recover-password-subtitle">Digite seu email e telefone para receber o link de recuperação</p>
+                <p className="recover-password-subtitle">Introduz o teu email e telemóvel para receberes o link de recuperação</p>
 
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
@@ -57,19 +57,19 @@ function RecoverPassword() {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
-                            placeholder="Seu email"
+                            placeholder="O teu email"
                         />
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="phone">Telefone:</label>
+                        <label htmlFor="phone">Telemóvel:</label>
                         <input
                             type="tel"
                             id="phone"
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
                             required
-                            placeholder="Seu telefone"
+                            placeholder="O teu número de telemóvel"
                         />
                     </div>
 
