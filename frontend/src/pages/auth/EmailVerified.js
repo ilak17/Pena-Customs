@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from "react-router-dom";
-import '../styles/RegisterConfirmation.css';
+import '../../styles/auth/RegisterConfirmation.css'; // Import the CSS file for styling
 
 export default function EmailVerified() {
     return (

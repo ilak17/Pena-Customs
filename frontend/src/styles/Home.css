@@ -212,6 +212,110 @@ main {
   margin-bottom: 0.5rem;
 }
 
+/* Featured Section */
+.featured-section {
+  padding: 4rem 2rem;
+  background-color: #f9f9f9;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.feature-card {
+  text-align: center;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+}
+
+.feature-card i {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.service-button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.service-button:hover {
+  background-color: var(--primary-color-dark);
+}
+
+/* Testimonials Section */
+.testimonials-section {
+  padding: 4rem 2rem;
+  background-color: white;
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.testimonial-card {
+  padding: 2rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.testimonial-rating {
+  color: #ffd700;
+  margin-bottom: 1rem;
+}
+
+.testimonial-card p {
+  font-style: italic;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.testimonial-card h4 {
+  color: var(--primary-color);
+  margin: 0;
+}
+
+.social-links {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.social-link {
+  color: var(--primary-color);
+  font-size: 1.5rem;
+  transition: color 0.3s ease;
+}
+
+.social-link:hover {
+  color: var(--primary-color-dark);
+}
+
+.footer-section i {
+  margin-right: 0.5rem;
+  color: var(--primary-color);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .hero-section {
@@ -243,5 +347,15 @@ main {
 
   .cta-content h2 {
     font-size: 2rem;
+  }
+
+  .features-grid,
+  .testimonials-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .feature-card,
+  .testimonial-card {
+    padding: 1.5rem;
   }
 } 
