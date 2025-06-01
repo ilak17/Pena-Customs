@@ -63,6 +63,7 @@
 
 .action-buttons {
     margin-top: 2rem;
+    text-align: center;
 }
 
 .login-link {
@@ -74,6 +75,9 @@
     border-radius: 8px;
     font-weight: 500;
     transition: all 0.3s ease;
+    width: 200px;
+    text-align: center;
+    margin: 0 auto;
 }
 
 .login-link:hover {

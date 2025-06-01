@@ -7,6 +7,7 @@ import RegisterConfirmation from './pages/auth/RegisterConfirmation';
 import EmailVerified from './pages/auth/EmailVerified';
 import RecoverPassword from './pages/auth/RecoverPassword';
 import ResetPassword from './pages/auth/ResetPassword';
+import MyProfile from './pages/user/MyProfile';
 import './styles/App.css';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
           <Route path="/email-verificado" element={<EmailVerified />} />
           <Route path="/recuperar-password" element={<RecoverPassword />} />
           <Route path="/alterar-password/:resetToken" element={<ResetPassword />} />
+          <Route path="/perfil" element={<MyProfile />} />
         </Routes>
       </div>
     </Router>
