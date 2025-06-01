@@ -127,8 +127,10 @@ function Home() {
           <div className="footer-section">
             <h3>Redes Sociais</h3>
             <div className="social-links">
+              {/*
               <a href="#" target="_blank" rel="noopener noreferrer">Facebook</a>
               <a href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
+              */}
             </div>
           </div>
         </div>
