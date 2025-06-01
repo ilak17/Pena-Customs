@@ -3,9 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import '../styles/Home.css';
 import car1 from '../assets/images/car1.jpg';
+import serviceImagePaint from '../assets/images/serviceImagePaint.jpg';
+import serviceImageMotor from '../assets/images/serviceImageMotor.jpg';
+import serviceImageInterior from '../assets/images/serviceImageInter1.jpg';
 
 function Home() {
   const navigate = useNavigate();
+  const isLoggedIn = localStorage.getItem('token');
 
   return (
     <div className="page-container">
@@ -15,34 +19,19 @@ function Home() {
         <section className="hero-section">
           <div className="hero-content">
             <h1>Bem-vindo à Pena-Customs</h1>
-            <p>A sua oficina especializada em transformar o seu automóvel num verdadeiro ícone sobre rodas</p>
-            <button onClick={() => navigate('/servicos')} className="cta-button">
-              Descubra os Nossos Serviços
-            </button>
+            <p>A sua oficina de personalização automóvel de referência em Portugal</p>
+            {isLoggedIn ? (
+              <button onClick={() => navigate('/minhas-reservas')} className="cta-button">
+                Agendar Reserva
+              </button>
+            ) : (
+              <button onClick={() => navigate('/registar')} className="cta-button">
+                Começar Agora
+              </button>
+            )}
           </div>
           <div className="hero-image">
-            <img src={car1} alt="Automóvel customizado em destaque" className="image-placeholder" />
-          </div>
-        </section>
-
-        <section className="featured-section">
-          <h2>Porquê Escolher-nos?</h2>
-          <div className="features-grid">
-            <div className="feature-card">
-              <i className="fas fa-tools"></i>
-              <h3>Experiência Comprovada</h3>
-              <p>Mais de 10 anos de excelência em personalização automóvel</p>
-            </div>
-            <div className="feature-card">
-              <i className="fas fa-award"></i>
-              <h3>Qualidade Premium</h3>
-              <p>Utilizamos apenas materiais e componentes de alta qualidade</p>
-            </div>
-            <div className="feature-card">
-              <i className="fas fa-clock"></i>
-              <h3>Prazos Garantidos</h3>
-              <p>Cumprimos rigorosamente os prazos estabelecidos</p>
-            </div>
+            <img src={car1} alt="Viatura personalizada em destaque" className="image-placeholder" />
           </div>
         </section>
 
@@ -51,43 +40,70 @@ function Home() {
           <div className="services-grid">
             <div className="service-card">
               <div className="service-image">
-                <i className="fas fa-spray-can"></i>
+                <img src={serviceImagePaint} alt="Serviço de Pintura Personalizada" />
               </div>
-              <h3>Pintura Personalizada</h3>
-              <p>Designs exclusivos e acabamento premium para o seu automóvel</p>
-              <button onClick={() => navigate('/servicos/pintura')} className="service-button">
-                Saber Mais
-              </button>
+              <div className="service-content">
+                <h3>Pintura Personalizada</h3>
+                <p>Designs exclusivos e acabamento premium para a sua viatura</p>
+                <button onClick={() => navigate('/servicos/pintura')} className="service-button">
+                  Saber Mais
+                </button>
+              </div>
             </div>
             <div className="service-card">
               <div className="service-image">
-                <i className="fas fa-cogs"></i>
+                <img src={serviceImageMotor} alt="Serviço de Modificações Mecânicas" />
               </div>
-              <h3>Modificações Mecânicas</h3>
-              <p>Otimização de performance e potência ao mais alto nível</p>
-              <button onClick={() => navigate('/servicos/mecanica')} className="service-button">
-                Saber Mais
-              </button>
+              <div className="service-content">
+                <h3>Modificações Mecânicas</h3>
+                <p>Otimização de desempenho e potência para máxima performance</p>
+                <button onClick={() => navigate('/servicos/mecanica')} className="service-button">
+                  Saber Mais
+                </button>
+              </div>
             </div>
             <div className="service-card">
               <div className="service-image">
-                <i className="fas fa-car"></i>
+                <img src={serviceImageInterior} alt="Serviço de Interior Personalizado" />
               </div>
-              <h3>Interior Personalizado</h3>
-              <p>Conforto e estilo em cada pormenor do seu automóvel</p>
-              <button onClick={() => navigate('/servicos/interior')} className="service-button">
-                Saber Mais
-              </button>
+              <div className="service-content">
+                <h3>Interior Personalizado</h3>
+                <p>Requinte e conforto em cada pormenor do habitáculo</p>
+                <button onClick={() => navigate('/servicos/interior')} className="service-button">
+                  Saber Mais
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="features-section">
+          <h2>Porquê Escolher-nos?</h2>
+          <div className="features-grid">
+            <div className="feature-card">
+              <i className="feature-icon expertise-icon"></i>
+              <h3>Experiência Comprovada</h3>
+              <p>Mais de 10 anos de excelência em personalização automóvel</p>
+            </div>
+            <div className="feature-card">
+              <i className="feature-icon quality-icon"></i>
+              <h3>Qualidade Premium</h3>
+              <p>Utilizamos apenas materiais e equipamentos de topo</p>
+            </div>
+            <div className="feature-card">
+              <i className="feature-icon warranty-icon"></i>
+              <h3>Garantia de Serviço</h3>
+              <p>Todos os nossos trabalhos têm garantia assegurada</p>
             </div>
           </div>
         </section>
 
         <section className="cta-section">
           <div className="cta-content">
-            <h2>Pronto para Transformar o Seu Automóvel?</h2>
-            <p>Agende já uma reserva personalizada e dê vida aos seus sonhos automóveis</p>
-            <button onClick={() => navigate('/reservas')} className="cta-button">
-              Agendar Reserva
+            <h2>Pronto para Transformar a Sua Viatura?</h2>
+            <p>Agende já uma consulta personalizada e descubra todas as possibilidades</p>
+            <button onClick={() => navigate('/contactos')} className="cta-button">
+              Contacte-nos
             </button>
           </div>
         </section>
@@ -97,9 +113,10 @@ function Home() {
         <div className="footer-content">
           <div className="footer-section">
             <h3>Contactos</h3>
-            <p><i className="fas fa-envelope"></i> geral@pena-customs.pt</p>
-            <p><i className="fas fa-phone"></i> (+351) 123 456 789</p>
-            <p><i className="fas fa-map-marker-alt"></i> Rua Principal, 123, Porto</p>
+            <p>Email: geral@pena-customs.pt</p>
+            <p>Telefone: (+351) 123 456 789</p>
+            <p>Morada: Rua Principal, 123</p>
+            <p>2750-000 Cascais</p>
           </div>
           <div className="footer-section">
             <h3>Horário de Funcionamento</h3>
@@ -108,12 +125,15 @@ function Home() {
             <p>Domingo: Encerrado</p>
           </div>
           <div className="footer-section">
-            <h3>Siga-nos</h3>
+            <h3>Redes Sociais</h3>
             <div className="social-links">
-              <a href="#" className="social-link"><i className="fab fa-facebook"></i></a>
-              <a href="#" className="social-link"><i className="fab fa-instagram"></i></a>
+              <a href="#" target="_blank" rel="noopener noreferrer">Facebook</a>
+              <a href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
             </div>
           </div>
+        </div>
+        <div className="footer-bottom">
+          <p>&copy; 2024 Pena-Customs. Todos os direitos reservados.</p>
         </div>
       </footer>
     </div>

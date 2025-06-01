@@ -45,9 +45,6 @@ function Header() {
                 <Link to="/minhas-reservas" className="dropdown-item">
                   <i className="fas fa-calendar-alt"></i> As Minhas Reservas
                 </Link>
-                <Link to="/favoritos" className="dropdown-item">
-                  <i className="fas fa-heart"></i> Favoritos
-                </Link>
                 <div className="dropdown-divider"></div>
                 <button onClick={handleLogout} className="dropdown-item logout-item">
                   <i className="fas fa-sign-out-alt"></i> Terminar Sessão
