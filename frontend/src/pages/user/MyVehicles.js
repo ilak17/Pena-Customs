@@ -72,6 +72,16 @@ const MyVehicles = () => {
                 ) : (
                     vehicles.map((vehicle) => (
                         <div key={vehicle.plate} className="vehicle-card">
+                            <div className="vehicle-image">
+                                {vehicle.image ? (
+                                    <img 
+                                        src={`http://localhost:3000${vehicle.image}`} 
+                                        alt={`${vehicle.brand} ${vehicle.model}`}
+                                    />
+                                ) : (
+                                    <div className="no-image">Sem imagem</div>
+                                )}
+                            </div>
                             <div className="vehicle-info">
                                 <h3>{vehicle.brand} {vehicle.model}</h3>
                                 <p>Matrícula: {vehicle.plate}</p>

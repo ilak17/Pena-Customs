@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 app.use(cors({
@@ -10,6 +11,7 @@ app.use(cors({
 
 // Middleware
 app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
 // Rotas
 const reportRoute = require('./routes/reportRoute');

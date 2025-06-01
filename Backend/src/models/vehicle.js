@@ -7,8 +7,11 @@ const vehicleSchema = mongoose.Schema({
     clientID: {type: mongoose.Schema.Types.ObjectId, ref: 'Clients'},
     plate: {type: String, required: true},
     brand: {type: String, required: true},
-    model: {type: String, required: true}    
-
+    model: {type: String, required: true},
+    image: {
+        type: String,
+        default: null
+    }
 });
 
 //Middleware para verificar se existe Veículos com a mesma matrícula 

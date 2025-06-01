@@ -9,6 +9,8 @@ const AddVehicle = () => {
         brand: '',
         model: ''
     });
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [previewImage, setPreviewImage] = useState(null);
     const [error, setError] = useState('');
 
     const handleChange = (e) => {
@@ -19,16 +21,31 @@ const AddVehicle = () => {
         }));
     };
 
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setSelectedImage(file);
+            setPreviewImage(URL.createObjectURL(file));
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            const formDataToSend = new FormData();
+            formDataToSend.append('plate', formData.plate);
+            formDataToSend.append('brand', formData.brand);
+            formDataToSend.append('model', formData.model);
+            if (selectedImage) {
+                formDataToSend.append('image', selectedImage);
+            }
+
             const response = await fetch('http://localhost:3000/vehicle/my-vehicles', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
-                body: JSON.stringify(formData)
+                body: formDataToSend
             });
 
             const data = await response.json();
@@ -83,6 +100,21 @@ const AddVehicle = () => {
                         required
                         placeholder="Ex: Corolla"
                     />
+                </div>
+                <div className="form-group">
+                    <label htmlFor="image">Imagem do Veículo:</label>
+                    <input
+                        type="file"
+                        id="image"
+                        name="image"
+                        accept="image/jpeg,image/png,image/jpg"
+                        onChange={handleImageChange}
+                    />
+                    {previewImage && (
+                        <div className="image-preview">
+                            <img src={previewImage} alt="Preview" style={{ maxWidth: '200px' }} />
+                        </div>
+                    )}
                 </div>
                 <div className="form-actions">
                     <button type="button" onClick={() => navigate('/user/my-vehicles')} className="cancel-btn">

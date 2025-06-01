@@ -1,5 +1,32 @@
 const Client = require('../models/client');
 const Vehicle = require('../models/vehicle');
+const multer = require('multer');
+const path = require('path');
+
+// Configuração do Multer para upload de imagens
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'public/uploads/vehicles')
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + path.extname(file.originalname))
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // Limite de 5MB
+    fileFilter: function (req, file, cb) {
+        const filetypes = /jpeg|jpg|png/;
+        const mimetype = filetypes.test(file.mimetype);
+        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+
+        if (mimetype && extname) {
+            return cb(null, true);
+        }
+        cb(new Error('Apenas imagens nos formatos JPG, JPEG e PNG são permitidas!'));
+    }
+}).single('image');
 
 // Controlador usado para o Admin obter todos os veícluos
 exports.getAllVehicles = async (req, res) => {
@@ -67,61 +94,79 @@ exports.getMyVehicle = async (req, res) => {
 
 // Controlador usado para o Cliente criar um veículo
 exports.createVehicle = async (req, res) => {
-    try{
-        const {plate, brand, model} = req.body
+    try {
+        upload(req, res, async function(err) {
+            if (err instanceof multer.MulterError) {
+                return res.status(400).json({success: false, message: "Erro no upload da imagem"});
+            } else if (err) {
+                return res.status(400).json({success: false, message: err.message});
+            }
 
-        const client = req.user;
-        
-        const clientID = client._id;
-        const vehicle = new Vehicle({clientID, plate, brand, model});
-        await vehicle.save();
+            const {plate, brand, model} = req.body;
+            const client = req.user;
+            const clientID = client._id;
 
-        client.vehicles.push(vehicle);
+            const vehicle = new Vehicle({
+                clientID,
+                plate,
+                brand,
+                model,
+                image: req.file ? `/uploads/vehicles/${req.file.filename}` : null
+            });
 
-        await client.save();
-            
-        res.status(201).json({
-            sucess: true,
-            message: "Veículo guardado com sucesso",
-            vehicle: vehicle
+            await vehicle.save();
+            client.vehicles.push(vehicle);
+            await client.save();
+                
+            res.status(201).json({
+                success: true,
+                message: "Veículo guardado com sucesso",
+                vehicle: vehicle
+            });
         });
-
-    }catch(err){
+    } catch(err) {
         console.log(err);
-
-        if (err instanceof Error && err.message) { //Captura mensagens de erro personalizadas
+        if (err instanceof Error && err.message) {
             return res.status(400).json({ success: false, message: err.message });
         }
-
-        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
+        res.status(500).json({success: false, message: "Erro interno no servidor"});
     }
 };
 
 // Controlador para o Cliente atualizar os dados do seu Veículo
 exports.updateMyVehicle = async (req, res) => {
     try{ 
-        const {brand, model} = req.body; 
-        const plate = req.params.plate;
+        upload(req, res, async function(err) {
+            if (err instanceof multer.MulterError) {
+                return res.status(400).json({success: false, message: "Erro no upload da imagem"});
+            } else if (err) {
+                return res.status(400).json({success: false, message: err.message});
+            }
 
-        const client = req.user; 
+            const {brand, model} = req.body; 
+            const plate = req.params.plate;
+            const client = req.user; 
 
-        const vehicle = await Vehicle.findOne({clientID: client._id, plate: plate});
-        if(!vehicle) return res.status(404).json({ success: false, message: "Veículo não encontrado" });
+            const vehicle = await Vehicle.findOne({clientID: client._id, plate: plate});
+            if(!vehicle) return res.status(404).json({ success: false, message: "Veículo não encontrado" });
 
-        vehicle.brand = brand || vehicle.brand;
-        vehicle.model = model || vehicle.model;
-        
-        await vehicle.save();
-        
-        res.status(200).json({ 
-            success: true, 
-            message: "Veículo atualizado com sucesso", 
-            vehicle: vehicle 
+            vehicle.brand = brand || vehicle.brand;
+            vehicle.model = model || vehicle.model;
+            if (req.file) {
+                vehicle.image = `/uploads/vehicles/${req.file.filename}`;
+            }
+            
+            await vehicle.save();
+            
+            res.status(200).json({ 
+                success: true, 
+                message: "Veículo atualizado com sucesso", 
+                vehicle: vehicle 
+            });
         });
-
     }catch(err){
         console.log(err);
-        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
+        res.status(500).json({success: false, message: "Erro interno no servidor"});
     }
 };
 
