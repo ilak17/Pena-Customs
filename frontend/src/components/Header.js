@@ -39,7 +39,7 @@ function Header() {
                 <Link to="/perfil" className="dropdown-item">
                   <i className="fas fa-user-circle"></i> Dados Pessoais
                 </Link>
-                <Link to="/veiculos" className="dropdown-item">
+                <Link to="/meus-veiculos" className="dropdown-item">
                   <i className="fas fa-car"></i> Os Meus Veículos
                 </Link>
                 <Link to="/minhas-reservas" className="dropdown-item">

@@ -8,6 +8,9 @@ import EmailVerified from './pages/auth/EmailVerified';
 import RecoverPassword from './pages/auth/RecoverPassword';
 import ResetPassword from './pages/auth/ResetPassword';
 import MyProfile from './pages/user/MyProfile';
+import MyVehicles from './pages/user/MyVehicles';
+import AddVehicle from './pages/user/AddVehicle';
+import EditVehicle from './pages/user/EditVehicle';
 import './styles/App.css';
 
 function App() {
@@ -23,6 +26,9 @@ function App() {
           <Route path="/recuperar-password" element={<RecoverPassword />} />
           <Route path="/alterar-password/:resetToken" element={<ResetPassword />} />
           <Route path="/perfil" element={<MyProfile />} />
+          <Route path="/meus-veiculos" element={<MyVehicles />} />
+          <Route path="/adicionar-veiculo" element={<AddVehicle />} />
+          <Route path="/editar-veiculo/:plate" element={<EditVehicle />} />
         </Routes>
       </div>
     </Router>
