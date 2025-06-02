@@ -3,6 +3,7 @@ const {v4: uuidv4} = require('uuid');
 
 const ServiceCategory = [
   'Mecânica Geral',
+  'Mecânica Avançada',
   'Elétrica e Eletrónica',
   'Manutenção Rápida',
   'Rodas e Travões',

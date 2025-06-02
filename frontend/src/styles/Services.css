@@ -165,4 +165,95 @@
   .service-item-content h2 {
     font-size: 1.75rem;
   }
+}
+
+.services-filters {
+  max-width: 1150px;
+  margin: 0 auto;
+  padding: 2rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.services-filters input[type="text"],
+.services-filters input[type="number"],
+.services-filters select {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  min-width: 150px;
+}
+
+.services-filters input[type="text"] {
+  flex: 1;
+  min-width: 200px;
+}
+
+.price-filters {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.price-filters input {
+  width: 100px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  margin-top: 2rem;
+}
+
+.pagination button {
+  padding: 0.5rem 1rem;
+  background-color: rgb(146, 40, 26);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination button:hover:not(:disabled) {
+  background-color: rgb(126, 34, 22);
+}
+
+.pagination span {
+  font-size: 1rem;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .services-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .services-filters input[type="text"],
+  .services-filters select {
+    width: 100%;
+  }
+
+  .price-filters {
+    width: 100%;
+  }
+
+  .price-filters input {
+    flex: 1;
+  }
 } 

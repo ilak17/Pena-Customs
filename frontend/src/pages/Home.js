@@ -11,6 +11,12 @@ function Home() {
   const navigate = useNavigate();
   const isLoggedIn = localStorage.getItem('token');
 
+  const navigateToServices = (category) => {
+    const params = new URLSearchParams();
+    params.append('category', category);
+    navigate(`/servicos?${params.toString()}`);
+  };
+
   return (
     <div className="page-container">
       <Header />
@@ -45,7 +51,7 @@ function Home() {
               <div className="service-content">
                 <h3>Pintura Personalizada</h3>
                 <p>Designs exclusivos e acabamento premium para a sua viatura</p>
-                <button onClick={() => navigate('/servicos/pintura')} className="service-button">
+                <button onClick={() => navigateToServices('Chapa e Pintura')} className="service-button">
                   Saber Mais
                 </button>
               </div>
@@ -57,7 +63,7 @@ function Home() {
               <div className="service-content">
                 <h3>Modificações Mecânicas</h3>
                 <p>Otimização de desempenho e potência para máxima performance</p>
-                <button onClick={() => navigate('/servicos/mecanica')} className="service-button">
+                <button onClick={() => navigateToServices('Mecânica Avançada')} className="service-button">
                   Saber Mais
                 </button>
               </div>
@@ -69,7 +75,7 @@ function Home() {
               <div className="service-content">
                 <h3>Interior Personalizado</h3>
                 <p>Requinte e conforto em cada pormenor do habitáculo</p>
-                <button onClick={() => navigate('/servicos/interior')} className="service-button">
+                <button onClick={() => navigateToServices('Personalização')} className="service-button">
                   Saber Mais
                 </button>
               </div>

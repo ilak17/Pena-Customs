@@ -5,30 +5,77 @@ const upload = uploadUtil.createUploader(uploadUtil.storageService);
 
 // Obtem todos os serviços
 exports.getAllServices = async (req, res) => {
-    try{
-        // sortBy, orderBy, s são os parâmetros de pesquisa
-        const {s, sortBy = 'name', order = 'asc'} = req.query;
+    try {
+        const {
+            s,                          // termo de pesquisa
+            sortBy = 'name',           // campo para ordenação
+            order = 'asc',             // direção da ordenação
+            page = 1,                  // página atual
+            limit = 6,                 // itens por página
+            category,                  // filtro por categoria
+            minPrice,                  // preço mínimo
+            maxPrice,                  // preço máximo
+            status                     // filtro por status
+        } = req.query;
 
         let query = {};
-        if(s){
-            query = {
-                $or: [
-                    { name: new RegExp(s, 'i') },
-                    { sku: new RegExp(s, 'i') },
-                    { description: new RegExp(s, 'i') },
-                    { category: new RegExp(s, 'i') }
-                ]
-            };
+
+        // Filtro de pesquisa
+        if (s) {
+            query.$or = [
+                { name: new RegExp(s, 'i') },
+                { sku: new RegExp(s, 'i') },
+                { description: new RegExp(s, 'i') },
+                { category: new RegExp(s, 'i') }
+            ];
+        }
+
+        // Filtro por categoria
+        if (category) {
+            query.category = new RegExp(category, 'i');
+        }
+
+        // Filtro por status
+        if (status) {
+            query.status = status;
+        }
+
+        // Filtro por preço
+        if (minPrice || maxPrice) {
+            query.price = {};
+            if (minPrice) query.price.$gte = Number(minPrice);
+            if (maxPrice) query.price.$lte = Number(maxPrice);
         }
 
         const sortOrder = order === 'desc' ? -1 : 1;
-        const service = await Service.find(query).sort({ [sortBy]: sortOrder });
-        if(!service) return res.status(404).json({ sucess: false, message: "Serviços não encontrado" });
+        
+        // Calcular total de documentos e páginas
+        const total = await Service.countDocuments(query);
+        const totalPages = Math.ceil(total / limit);
+        
+        // Buscar serviços com paginação
+        const services = await Service.find(query)
+            .sort({ [sortBy]: sortOrder })
+            .skip((page - 1) * limit)
+            .limit(Number(limit));
 
-        res.status(201).json({ success: true, message: service });
-    }catch(err){
+        if (!services) {
+            return res.status(404).json({ success: false, message: "Serviços não encontrados" });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: services,
+            pagination: {
+                total,
+                totalPages,
+                currentPage: Number(page),
+                itemsPerPage: Number(limit)
+            }
+        });
+    } catch (err) {
         console.log(err);
-        res.status(500).json({ success:false, message: "Erro interno do servidor" });
+        res.status(500).json({ success: false, message: "Erro interno do servidor" });
     }
 }
 
