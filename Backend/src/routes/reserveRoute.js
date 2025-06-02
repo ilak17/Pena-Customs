@@ -4,7 +4,7 @@ const reserveController = require('../controllers/reserveController');
 const { authenticateUser, isAdmin } = require('../middlewares/authMiddleware');
 
 router.get('/', authenticateUser, isAdmin, reserveController.getAllReserves);
-router.get('/:sku', authenticateUser, reserveController.getReserveBySKU);
+router.get('/all/:sku', authenticateUser, reserveController.getReserveBySKU);
 router.get('/my-reserves', authenticateUser, reserveController.getMyReserves);
 router.post('/', authenticateUser, reserveController.createReserve);
 router.put('/:sku', authenticateUser, isAdmin, reserveController.updateReserve);

@@ -13,6 +13,7 @@ import AddVehicle from './pages/user/AddVehicle';
 import EditVehicle from './pages/user/EditVehicle';
 import CreateReserve from './pages/user/CreateReserve';
 import Services from './pages/Services';
+import MyReserves from './pages/user/MyReserves';
 
 import './styles/App.css';
 
@@ -34,6 +35,7 @@ function App() {
           <Route path="/editar-veiculo/:plate" element={<EditVehicle />} />
           <Route path="/marcar-reserva" element={<CreateReserve />} />
           <Route path="/servicos" element={<Services />} />
+          <Route path="/minhas-reservas" element={<MyReserves />} />
         </Routes>
       </div>
     </Router>

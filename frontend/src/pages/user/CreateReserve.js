@@ -11,7 +11,7 @@ function CreateReserve() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [formData, setFormData] = useState({
-    serviceSKU: '',
+    serviceSKU: [],
     plate: '',
     dateTime: '',
     addComent: ''
@@ -70,10 +70,18 @@ function CreateReserve() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    if (name === 'serviceSKU') {
+      // Converte o valor selecionado em um array com um único elemento
+      setFormData(prev => ({
+        ...prev,
+        [name]: [value]
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -101,7 +109,7 @@ function CreateReserve() {
       if (data.success) {
         setSuccess('Reserva criada com sucesso!');
         setFormData({
-          serviceSKU: '',
+          serviceSKU: [],
           plate: '',
           dateTime: '',
           addComent: ''
@@ -151,7 +159,7 @@ function CreateReserve() {
               <select
                 id="serviceSKU"
                 name="serviceSKU"
-                value={formData.serviceSKU}
+                value={formData.serviceSKU[0] || ''}
                 onChange={handleChange}
                 required
               >

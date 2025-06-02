@@ -50,14 +50,13 @@ exports.getReserveBySKU = async (req, res) => {
             .populate('vehicleID', '-__v -clientID -_id')
             .populate('serviceID', '-status -__v')
         ;
-
         if(!reserve) return res.status(404).json({sucess:false, message: "Reserva não encontrado"});
 
-        res.status(200).json({sucess: true, reserves: reserve});
+        res.status(200).json({success: true, message: reserve});
 
     }catch(err){
         console.log(err);
-        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
+        res.status(500).json({success: false, message: "Erro interno no servidor"});
     }
 }
 
@@ -67,27 +66,65 @@ exports.getMyReserves = async (req, res) => {
         const client = req.user;
 
         // sortBy, orderBy, s são os parâmetros de pesquisa
-        const {s, sortBy = 'startTime', order = 'asc'} = req.query;
+        const {
+            s,
+            sortBy = 'startTime',
+            order = 'asc',
+            page = 1,
+            limit = 6
+        } = req.query;
 
-        let query = {clientID: client._id};
+        let query = { clientID: client._id };
+        
         if(s){
+            // Primeiro, encontra os veículos que correspondem à pesquisa
+            const vehicles = await Vehicle.find({
+                plate: new RegExp(s, 'i')
+            }).select('_id');
+
+            const vehicleIds = vehicles.map(v => v._id);
+
             query = {
+                clientID: client._id,
                 $or: [
                     { sku: new RegExp(s, 'i') },
-                    { vehicleID: new RegExp(s, 'i') },
-                    { serviceID: new RegExp(s, 'i') },
+                    { vehicleID: { $in: vehicleIds } },
                     { status: new RegExp(s, 'i') }
                 ]
             };
         }
 
         const sortOrder = order === 'desc' ? -1 : 1;
-        const reserves = await Reserve.find(query).sort({ [sortBy]: sortOrder }).populate('clientID').populate('vehicleID').populate('serviceID');
-        if(!reserves) return res.status(404).json({sucess: false, message: "Reservas não encontradas"});
+
+        // Calcular total de documentos e páginas
+        const total = await Reserve.countDocuments(query);
+        const totalPages = Math.ceil(total / limit);
+
+        // Buscar reservas com paginação
+        const reserves = await Reserve.find(query)
+            .sort({ [sortBy]: sortOrder })
+            .skip((page - 1) * limit)
+            .limit(Number(limit))
+            .populate('clientID')
+            .populate('vehicleID')
+            .populate('serviceID');
+
+        if(!reserves) return res.status(404).json({success: false, message: "Reservas não encontradas"});
+
+        res.status(200).json({
+            success: true,
+            message: reserves,
+            pagination: {
+                total,
+                totalPages,
+                currentPage: Number(page),
+                itemsPerPage: Number(limit)
+            }
+        });
 
     }catch(err){
         console.log(err);
-        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
+        res.status(500).json({success: false, message: "Erro interno no servidor"});
     }
 }
 
