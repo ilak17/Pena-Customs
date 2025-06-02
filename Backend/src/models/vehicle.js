@@ -10,7 +10,8 @@ const vehicleSchema = mongoose.Schema({
     model: {type: String, required: true},
     image: {
         type: String,
-        default: null
+        default: null,
+        required: false
     }
 });
 

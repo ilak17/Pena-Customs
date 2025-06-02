@@ -1,20 +1,84 @@
+.page-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding-top: 80px; /* Espaço para o header fixo */
+    background: #f8f1f0;
+}
+
 .my-vehicles-container {
     max-width: 1200px;
-    margin: 2rem auto;
-    padding: 0 1.5rem;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
     position: relative;
+    background: linear-gradient(135deg, 
+        rgba(146, 40, 26, 0.95) 0%,
+        rgba(126, 34, 22, 0.9) 50%,
+        rgba(95, 25, 16, 0.95) 100%
+    );
+    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.2);
+    background-size: 200% 200%;
+    animation: gradientBG 15s ease infinite;
+    height: fit-content;
+    margin-bottom: 2rem;
+    border-radius: 40px;
+    clip-path: polygon(
+        0% 0%,
+        100% 0%,
+        100% calc(100% - 50px),
+        95% 100%,
+        5% 100%,
+        0% calc(100% - 50px)
+    );
 }
 
 .my-vehicles-container::before {
     content: '';
     position: absolute;
-    top: -2rem;
-    left: 0;
-    right: 0;
-    height: 200px;
-    background: linear-gradient(135deg, rgb(146, 40, 26) 0%, rgb(126, 34, 22) 100%);
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    height: 60px;
+    background: linear-gradient(135deg,
+        rgba(180, 50, 32, 1) 0%,
+        rgba(146, 40, 26, 0.9) 50%,
+        rgba(126, 34, 22, 1) 100%
+    );
+    border-radius: 100% 100% 0 0;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.my-vehicles-container::after {
+    content: '';
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 85%;
+    height: 60px;
+    background: linear-gradient(135deg,
+        rgb(39, 12, 12) 0%,
+        rgb(85, 25, 25) 50%,
+        rgb(39, 12, 12) 100%
+    );
+    border-radius: 0 0 100% 100%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    background-size: 200% 200%;
+    animation: gradientBG 8s ease infinite;
     z-index: -1;
-    border-radius: 0 0 50% 50% / 0 0 100px 100px;
+}
+
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 .my-vehicles-header {
@@ -25,9 +89,35 @@
     position: relative;
     padding: 2rem;
     background: rgba(255, 255, 255, 0.95);
-    border-radius: 15px;
-    box-shadow: 0 8px 32px rgba(146, 40, 26, 0.1);
+    border-radius: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
+    z-index: 1;
+    overflow: hidden;
+}
+
+.my-vehicles-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+        circle at center,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0) 70%
+    );
+    animation: headerGlow 8s linear infinite;
+}
+
+@keyframes headerGlow {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .my-vehicles-header h1 {
@@ -49,11 +139,11 @@
 }
 
 .add-vehicle-btn {
-    padding: 0.75rem 1.5rem;
+    padding: 0.75rem 2rem;
     background-color: rgb(146, 40, 26);
     color: white;
     text-decoration: none;
-    border-radius: 30px;
+    border-radius: 50px;
     font-weight: 500;
     transition: all 0.3s ease;
     display: inline-flex;
@@ -78,12 +168,18 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 2rem;
-    padding: 1rem 0;
+    position: relative;
+    background: white;
+    border-radius: 30px;
+    padding: 2rem;
+    margin-bottom: 0;
+    z-index: 1;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .vehicle-card {
     background: white;
-    border-radius: 20px;
+    border-radius: 25px;
     padding: 1.5rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
@@ -157,7 +253,7 @@
 .edit-btn, .delete-btn {
     flex: 1;
     padding: 0.75rem;
-    border-radius: 30px;
+    border-radius: 50px;
     font-weight: 500;
     text-align: center;
     transition: all 0.3s ease;
@@ -203,15 +299,10 @@
     box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
 }
 
-.loading {
+.loading, .error {
+    margin-top: 80px; /* Espaço para o header fixo */
+    padding: 2rem;
     text-align: center;
-    padding: 3rem;
-    font-size: 1.2rem;
-    color: #666;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
 }
 
 .loading::after {
@@ -267,7 +358,7 @@
     width: 100%;
     height: 200px;
     margin-bottom: 1rem;
-    border-radius: 10px;
+    border-radius: 20px;
     overflow: hidden;
     background-color: #f5f5f5;
     display: flex;
@@ -308,8 +399,16 @@
 
 /* Responsividade */
 @media (max-width: 768px) {
-    .my-vehicles-container::before {
-        height: 150px;
+    .page-container {
+        padding-top: 120px; /* Mais espaço para o header responsivo */
+    }
+
+    .loading, .error {
+        margin-top: 120px;
+    }
+
+    .my-vehicles-container::after {
+        height: 100px;
     }
 
     .my-vehicles-header {

@@ -1,4 +1,7 @@
 const Service = require('../models/service');
+const uploadUtil = require('../utils/uploadUtil')
+const multer = require('multer');
+const upload = uploadUtil.createUploader(uploadUtil.storageService);
 
 // Obtem todos os serviços
 exports.getAllServices = async (req, res) => {
@@ -11,7 +14,9 @@ exports.getAllServices = async (req, res) => {
             query = {
                 $or: [
                     { name: new RegExp(s, 'i') },
-                    { sku: new RegExp(s, 'i') }
+                    { sku: new RegExp(s, 'i') },
+                    { description: new RegExp(s, 'i') },
+                    { category: new RegExp(s, 'i') }
                 ]
             };
         }
@@ -20,10 +25,10 @@ exports.getAllServices = async (req, res) => {
         const service = await Service.find(query).sort({ [sortBy]: sortOrder });
         if(!service) return res.status(404).json({ sucess: false, message: "Serviços não encontrado" });
 
-        res.status(201).json({ sucess: true, message: service });
+        res.status(201).json({ success: true, message: service });
     }catch(err){
         console.log(err);
-        res.status(500).json({ sucess:false, message: "Erro interno do servidor" });
+        res.status(500).json({ success:false, message: "Erro interno do servidor" });
     }
 }
 
@@ -33,64 +38,101 @@ exports.getServiceBySku = async (req, res) =>{
         const sku = req.params.sku;
 
         const service = await Service.findOne({sku: sku});
-        if(!service) return res.status(404).json({ sucess: false, message: "Serviço não encontrado" });
+        if(!service) return res.status(404).json({ success: false, message: "Serviço não encontrado" });
         
-        res.status(200).json({ sucess: true, message: service });
+        res.status(200).json({ success: true, message: service });
     }catch(err){
         console.log(err);
-        res.status(500).json({ sucess:false, message: "Erro interno do servidor" });
+        res.status(500).json({ success:false, message: "Erro interno do servidor" });
     }
 }
 
 // Cria um serviço
-exports.createService = async (req, res) => {
-    try{
-        const {name, price, description} = req.body;
-        let estimatedTime = req.body.estimatedTime;
-
-        if(!name  || !price || !description || !estimatedTime){
-            return res.status(400).json({ sucess: false, message: "Preencha os valores obrigatórios" });
+exports.createService = (req, res) => {
+    upload(req, res, async function (err) {
+        if (err instanceof multer.MulterError) {
+            return res.status(400).json({ success: false, message: err.message });
+        } else if (err) {
+            return res.status(400).json({ success: false, message: err.message });
         }
 
-        const status = "available"; // status default
-        const service = new Service({name, price, description, estimatedTime, status});
+        try {
+            const { category, name, price, description, estimatedTime, status } = req.body;
 
-        await service.save();
+            if (!category || !name || !price || !description || !estimatedTime || !status) {
+                return res.status(400).json({ success: false, message: "Preencha os valores obrigatórios" });
+            }
 
-        res.status(201).json({
-            sucess: true, 
-            message: "Serviço criado com sucesso", 
-            service: service
-        });
+            const imagePath = req.file ? `/uploads/services/${req.file.filename}` : null;
 
-    }catch(err){
-        console.log(err);
-        res.status(500).json({sucess:false, message: "Erro interno do servidor"});
-    }
-}
+            const service = new Service({
+                category,
+                name,
+                price,
+                description,
+                estimatedTime,
+                status,
+                image: imagePath
+            });
+
+            await service.save();
+
+            res.status(201).json({
+                success: true,
+                message: service
+            });
+
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ success: false, message: "Erro interno do servidor" });
+        }
+    });
+};
 
 // Atualiza um serviço
-exports.updateService = async (req, res) => {
-    try{
-        const id = req.params.id;
-        const {name, price, description, estimatedTime, status} = req.body;
+exports.updateService = (req, res) => {
+    upload(req, res, async function (err) {
+        if (err instanceof multer.MulterError) {
+            return res.status(400).json({ success: false, message: err.message });
+        } else if (err) {
+            return res.status(400).json({ success: false, message: err.message });
+        }
 
-        const service = await Service.findOne({_id: id});
-        if(!service) return res.status(404).json({ sucess: false, message: "Serviço não encontrado" });
+        try {
+            const id = req.params.id;
+            const { category, name, price, description, estimatedTime, status } = req.body;
 
-        service.name = name || service.name;
-        service.price = price || service.price;
-        service.description = description || service.description;
-        service.estimatedTime = estimatedTime || service.estimatedTime;
-        service.status = status || service.status;
+            const service = await Service.findById(id);
+            if (!service) {
+                return res.status(404).json({ success: false, message: "Serviço não encontrado" });
+            }
 
-        await service.save();
-        res.status(200).json({ sucess: true, message: "Serviço atualizado com sucesso", service: service });
+            // Atualiza os campos, mantendo os existentes se não forem enviados
+            service.category = category || service.category;
+            service.name = name || service.name;
+            service.price = price || service.price;
+            service.description = description || service.description;
+            service.estimatedTime = estimatedTime || service.estimatedTime;
+            service.status = status || service.status;
 
-    }catch(err){
-        console.log(err);
-        res.status(500).json({ sucess:false, message: "Erro interno do servidor" });
-    }
+            // Se houver nova imagem enviada, atualiza o campo
+            if (req.file) {
+                service.image = `/uploads/services/${req.file.filename}`;
+            }
+
+            await service.save();
+
+            res.status(200).json({
+                success: true,
+                message: "Serviço atualizado com sucesso",
+                service: service
+            });
+
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ success: false, message: "Erro interno do servidor" });
+        }
+    });
 }
 
 //Apaga um serviço

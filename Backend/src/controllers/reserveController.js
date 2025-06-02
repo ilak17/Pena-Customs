@@ -131,7 +131,7 @@ exports.createReserve = async (req, res) => {
         });
 
         res.status(201).json({
-            sucess: true,
+            success: true,
             message: "Reserva guardada com sucesso",
             reserve: reserve
         });

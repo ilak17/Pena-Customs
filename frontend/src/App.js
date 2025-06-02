@@ -11,6 +11,9 @@ import MyProfile from './pages/user/MyProfile';
 import MyVehicles from './pages/user/MyVehicles';
 import AddVehicle from './pages/user/AddVehicle';
 import EditVehicle from './pages/user/EditVehicle';
+import CreateReserve from './pages/user/CreateReserve';
+import Services from './pages/Services';
+
 import './styles/App.css';
 
 function App() {
@@ -29,6 +32,8 @@ function App() {
           <Route path="/meus-veiculos" element={<MyVehicles />} />
           <Route path="/adicionar-veiculo" element={<AddVehicle />} />
           <Route path="/editar-veiculo/:plate" element={<EditVehicle />} />
+          <Route path="/marcar-reserva" element={<CreateReserve />} />
+          <Route path="/servicos" element={<Services />} />
         </Routes>
       </div>
     </Router>

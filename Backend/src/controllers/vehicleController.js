@@ -1,32 +1,6 @@
-const Client = require('../models/client');
 const Vehicle = require('../models/vehicle');
+const uploadUtil = require('../utils/uploadUtil')
 const multer = require('multer');
-const path = require('path');
-
-// Configuração do Multer para upload de imagens
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'public/uploads/vehicles')
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname))
-    }
-});
-
-const upload = multer({
-    storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // Limite de 5MB
-    fileFilter: function (req, file, cb) {
-        const filetypes = /jpeg|jpg|png/;
-        const mimetype = filetypes.test(file.mimetype);
-        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-
-        if (mimetype && extname) {
-            return cb(null, true);
-        }
-        cb(new Error('Apenas imagens nos formatos JPG, JPEG e PNG são permitidas!'));
-    }
-}).single('image');
 
 // Controlador usado para o Admin obter todos os veícluos
 exports.getAllVehicles = async (req, res) => {
@@ -51,10 +25,10 @@ exports.getAllVehicles = async (req, res) => {
 
         if(!vehicle) return res.status(404).json({ sucess: false, message: "Veículo(s) não encontrado(s)" });
 
-        res.status(200).json({ sucess: true, message: vehicle });
+        res.status(200).json({ success: true, message: vehicle });
     }catch(err){
         console.log(err);
-        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
+        res.status(500).json({success: false, message: "Erro interno no servidor"});
     }
 };
 
@@ -64,11 +38,11 @@ exports.getAllMyVehicles = async (req, res) => {
         const vehicle = await Vehicle.find({clientID: req.user._id});
         if(!vehicle) return res.status(404).json({sucess: false, message: "Veículo(s) não encontrado(s)"});
        
-        res.status(200).json({sucess: true, message: vehicle});
+        res.status(200).json({success: true, message: vehicle});
 
     }catch(err){
         console.log(err);
-        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
+        res.status(500).json({success: false, message: "Erro interno no servidor"});
     }
 };
 
@@ -82,24 +56,26 @@ exports.getMyVehicle = async (req, res) => {
 
         res.status(200).json({
             sucess: true,
-            message: "Veículo encontrado com sucesso",
-            vehicle: vehicle
+            message: vehicle,
         });
         
     }catch(err){
         console.log(err);
-        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
+        res.status(500).json({success: false, message: "Erro interno no servidor"});
     }
 };
 
 // Controlador usado para o Cliente criar um veículo
 exports.createVehicle = async (req, res) => {
     try {
-        upload(req, res, async function(err) {
+
+        const upload = uploadUtil.createUploader(uploadUtil.storageVehicle);
+
+        upload(req, res, async function (err) {
             if (err instanceof multer.MulterError) {
-                return res.status(400).json({success: false, message: "Erro no upload da imagem"});
+                return res.status(400).json({ success: false, message: "Erro no upload da imagem" });
             } else if (err) {
-                return res.status(400).json({success: false, message: err.message});
+                return res.status(400).json({ success: false, message: err.message });
             }
 
             const {plate, brand, model} = req.body;
@@ -136,11 +112,13 @@ exports.createVehicle = async (req, res) => {
 // Controlador para o Cliente atualizar os dados do seu Veículo
 exports.updateMyVehicle = async (req, res) => {
     try{ 
-        upload(req, res, async function(err) {
+        const upload = uploadUtil.createUploader(uploadUtil.storageVehicle);
+
+        upload(req, res, async function (err) {
             if (err instanceof multer.MulterError) {
-                return res.status(400).json({success: false, message: "Erro no upload da imagem"});
+                return res.status(400).json({ success: false, message: "Erro no upload da imagem" });
             } else if (err) {
-                return res.status(400).json({success: false, message: err.message});
+                return res.status(400).json({ success: false, message: err.message });
             }
 
             const {brand, model} = req.body; 

@@ -21,7 +21,7 @@ function Home() {
             <h1>Bem-vindo à Pena-Customs</h1>
             <p>A sua oficina de personalização automóvel de referência em Portugal</p>
             {isLoggedIn ? (
-              <button onClick={() => navigate('/minhas-reservas')} className="cta-button">
+              <button onClick={() => navigate('/marcar-reserva')} className="cta-button">
                 Agendar Reserva
               </button>
             ) : (
