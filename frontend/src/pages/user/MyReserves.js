@@ -25,42 +25,44 @@ function MyReserves() {
   });
 
   useEffect(() => {
-    fetchReserves();
-  }, [filters]);
 
-  const fetchReserves = async () => {
-    try {
-      const queryParams = new URLSearchParams({
-        ...filters,
-        page: filters.page,
-        limit: pagination.itemsPerPage
-      });
+    const fetchReserves = async () => {
+      try {
+        const queryParams = new URLSearchParams({
+          ...filters,
+          page: filters.page,
+          limit: pagination.itemsPerPage
+        });
 
-      const response = await fetch(`http://localhost:3000/reserve/my-reserves?${queryParams}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        const response = await fetch(`http://localhost:3000/reserve/my-reserves?${queryParams}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Erro ao carregar reservas');
         }
-      });
 
-      if (!response.ok) {
-        throw new Error('Erro ao carregar reservas');
+        const data = await response.json();
+        if (data.success) {
+          setReserves(data.message);
+          setPagination(data.pagination);
+          setSearchParams(queryParams);
+        } else {
+          throw new Error(data.message || 'Erro ao carregar reservas');
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      const data = await response.json();
-      if (data.success) {
-        setReserves(data.message);
-        setPagination(data.pagination);
-      } else {
-        throw new Error(data.message || 'Erro ao carregar reservas');
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    fetchReserves();
+  }, [navigate, filters, pagination.itemsPerPage, setSearchParams]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;

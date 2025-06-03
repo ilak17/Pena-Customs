@@ -31,42 +31,44 @@ function Services() {
   const [selectedService, setSelectedService] = useState(null);
 
   useEffect(() => {
-    fetchServices();
-  }, [filters, pagination.currentPage]);
 
-  const fetchServices = async () => {
-    try {
-      const queryParams = new URLSearchParams({
-        ...filters,
-        page: pagination.currentPage,
-        limit: pagination.itemsPerPage
-      });
+    const fetchServices = async () => {
+      try {
+        const queryParams = new URLSearchParams({
+          ...filters,
+          page: pagination.currentPage,
+          limit: pagination.itemsPerPage
+        });
 
-      const response = await fetch(`http://localhost:3000/service?${queryParams}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
+        const response = await fetch(`http://localhost:3000/service?${queryParams}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Erro ao carregar serviços');
         }
-      });
 
-      if (!response.ok) {
-        throw new Error('Erro ao carregar serviços');
+        const data = await response.json();
+        if (data.success) {
+          setServices(data.message);
+          setPagination(data.pagination);
+          setSearchParams(queryParams);
+        } else {
+          throw new Error(data.message || 'Erro ao carregar serviços');
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      const data = await response.json();
-      if (data.success) {
-        setServices(data.message);
-        setPagination(data.pagination);
-        setSearchParams(queryParams);
-      } else {
-        throw new Error(data.message || 'Erro ao carregar serviços');
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    fetchServices();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, setSearchParams]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
