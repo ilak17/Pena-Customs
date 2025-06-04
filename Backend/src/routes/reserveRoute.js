@@ -4,8 +4,8 @@ const reserveController = require('../controllers/reserveController');
 const { authenticateUser, isAdmin } = require('../middlewares/authMiddleware');
 
 router.get('/', authenticateUser, isAdmin, reserveController.getAllReserves);
-router.get('/all/:sku', authenticateUser, reserveController.getReserveBySKU);
 router.get('/my-reserves', authenticateUser, reserveController.getMyReserves);
+router.get('/:sku', authenticateUser, reserveController.getReserveBySKU);
 router.post('/', authenticateUser, reserveController.createReserve);
 router.put('/:sku', authenticateUser, isAdmin, reserveController.updateReserve);
 router.delete('/:sku', authenticateUser, isAdmin, reserveController.deleteReserve);
