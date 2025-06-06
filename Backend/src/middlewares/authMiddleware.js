@@ -1,31 +1,41 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const BlacklistedToken = require('../models/tokenBlacklist');
 
 /* Middleware para verificar se o utilizador está autenticado
    Este middleware deve ser usado em todas as rotas que requerem autenticação */
 exports.authenticateUser = async (req, res, next) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ success: false, message: 'Token não fornecido' });
+        }
 
-    // Verifica a presença do JWT no Header da requisição
-    const authHeader = req.headers.authorization; 
-    if(!authHeader) return res.status(401).json({ success: false, message: "Token não fornecido" });
+        const token = authHeader.split(' ')[1];
 
-    const token = authHeader.split(' ')[1]; // Extrai o token do Header removendo o "Bearer"
+        // Verifica se o token está na blacklist
+        const blacklisted = await BlacklistedToken.findOne({ token });
+        if (blacklisted) {
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
 
-    /* Verifica a validade do token e procura o utilizador correspondente no banco de dados
-       Por questões de segurança, removemos a password do utilizador da resposta */
-    try{
-        const decoded = jwt.verify(token, process.env.JWT_SECRET); 
+        // Verifica se o token é válido
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        // Busca o utilizador e remove informações sensíveis
         const user = await User.findById(decoded.id).select('-password -__v');
-        if (!user) return res.status(404).json({ success: false, message: "Utilizador não encontrado" });
-        
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'Utilizador não encontrado' });
+        }
+
         req.user = user;
         next();
 
-    }catch(err){
+    } catch (err) {
         console.error(err);
-        res.status(401).json({ success: false, message: "Token inválido" });
+        return res.status(401).json({ success: false, message: 'Token inválido ou expirado' });
     }
-}
+};
 
 /* Middleware para verificar se o utilizador autenticado é Admin
    Este middleware deve ser usado apenas em rotas que requerem acesso de administrador */

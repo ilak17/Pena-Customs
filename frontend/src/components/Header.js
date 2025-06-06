@@ -7,9 +7,25 @@ function Header() {
   const isLoggedIn = localStorage.getItem('token');
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/auth/logout', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      if (response.ok) {
+        localStorage.removeItem('token');
+        navigate('/');
+      } else {
+        console.error('Erro ao efetuar logout');
+      }
+    } catch (error) {
+      console.error('Erro ao efetuar logout:', error);
+    }
   };
 
   return (

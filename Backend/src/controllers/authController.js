@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const univUtil = require('../utils/univUtil');
 const regNpassTemplates = require('../utils/emailTemplates/regNpassTemplates');
+const BlacklistedToken = require('../models/tokenBlacklist');
 
 // Cria um novo utilizador
 exports.register = async (req, res) => {
@@ -83,6 +84,36 @@ exports.login = async (req, res) => {
     }catch(err){
         console.error(err);
         res.status(500).json({ success: false, message: "Erro interno no servidor" });
+    }
+};
+
+exports.logOut = async (req, res) => {
+    try {
+        const authHeader = req.headers.authorization; 
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ success: false, message: "Token não fornecido" });
+        }
+
+        const token = authHeader.split(' ')[1];
+
+        // Decodifica o token para obter o tempo de expiração (em segundos desde epoch)
+        const decoded = jwt.decode(token);
+        if (!decoded || !decoded.exp) {
+            return res.status(400).json({ success: false, message: "Token inválido" });
+        }
+
+        const expiresAt = new Date(decoded.exp * 1000); // converte para milissegundos
+
+        // Salva na blacklist com data de expiração
+        const blacklistedToken = new BlacklistedToken({ token, expiresAt });
+        await blacklistedToken.save();
+
+        console.log("sucesso")
+        return res.status(200).json({ success: true, message: "Logout efetuado com sucesso" });
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ success: false, message: "Erro interno ao efetuar logout" });
     }
 };
 
