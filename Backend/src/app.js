@@ -14,6 +14,7 @@ app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
 // Rotas
+
 const reportRoute = require('./routes/reportRoute');
 app.use('/report', reportRoute);
 

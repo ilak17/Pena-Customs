@@ -188,14 +188,14 @@ exports.deleteService = async (req, res) => {
         const id = req.params.id;
 
         const service = await Service.findOne({_id: id});
-        if(!service) return res.status(404).json({ sucess: false, message: "Serviço não encontrado" });
+        if(!service) return res.status(404).json({ suvcess: false, message: "Serviço não encontrado" });
         
         await service.deleteOne();
 
-        res.status(200).json({ sucess: true, message: "Serviço eliminado com sucesso"});
+        res.status(200).json({ success: true, message: "Serviço eliminado com sucesso"});
 
     }catch(err){
         console.log(err);
-        res.status(500).json({ sucess:false, message: "Erro interno do servidor" });
+        res.status(500).json({ success:false, message: "Erro interno do servidor" });
     }
 }

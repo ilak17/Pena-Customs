@@ -25,7 +25,11 @@ function Login() {
 
             if (response.ok) {
                 localStorage.setItem('token', data.token);
-                navigate('/');
+                if (data.isAdmin) {
+                    navigate('/admin/dashboard');
+                } else {
+                    navigate('/');
+                }
             } else {
                 setError(data.message || 'Erro ao iniciar sessão');
             }

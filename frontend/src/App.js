@@ -14,7 +14,7 @@ import EditVehicle from './pages/user/EditVehicle';
 import CreateReserve from './pages/user/CreateReserve';
 import Services from './pages/Services';
 import MyReserves from './pages/user/MyReserves';
-
+import AdminDashboard from './pages/admin/Dashboard';
 import './styles/App.css';
 
 function App() {
@@ -36,6 +36,8 @@ function App() {
           <Route path="/marcar-reserva" element={<CreateReserve />} />
           <Route path="/servicos" element={<Services />} />
           <Route path="/minhas-reservas" element={<MyReserves />} />
+
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Routes>
       </div>
     </Router>

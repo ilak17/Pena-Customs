@@ -1,0 +1,201 @@
+.reserves-container {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 2rem;
+}
+
+.reserves-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.reserves-header h2 {
+    color: var(--text-dark);
+    margin: 0;
+}
+
+.filters {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.search-bar {
+    width: 300px;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.search-bar input:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.status-filter {
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: white;
+    cursor: pointer;
+    min-width: 150px;
+}
+
+.reserves-table-container {
+    overflow-x: auto;
+}
+
+.reserves-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.reserves-table th,
+.reserves-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.reserves-table th {
+    background-color: #f8f9fa;
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+.reserves-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.status-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-icon {
+    font-size: 1.2rem;
+}
+
+.status-icon.completed {
+    color: #27ae60;
+}
+
+.status-icon.cancelled {
+    color: var(--accent-color);
+}
+
+.status-icon.pending {
+    color: #f39c12;
+}
+
+.status-text {
+    font-weight: 500;
+}
+
+.status-text.completed {
+    color: #27ae60;
+}
+
+.status-text.cancelled {
+    color: var(--accent-color);
+}
+
+.status-text.pending {
+    color: #f39c12;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.action-buttons button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: var(--transition);
+}
+
+.complete-button {
+    background-color: #27ae60;
+    color: white;
+}
+
+.complete-button:hover {
+    background-color: #219a52;
+}
+
+.cancel-button {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.cancel-button:hover {
+    background-color: #c0392b;
+}
+
+.loading {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-dark);
+}
+
+.error {
+    text-align: center;
+    padding: 2rem;
+    color: var(--accent-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .reserves-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filters {
+        flex-direction: column;
+    }
+
+    .search-bar {
+        width: 100%;
+    }
+
+    .status-filter {
+        width: 100%;
+    }
+
+    .reserves-table th,
+    .reserves-table td {
+        padding: 0.8rem;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .action-buttons button {
+        width: 100%;
+        justify-content: center;
+    }
+} 

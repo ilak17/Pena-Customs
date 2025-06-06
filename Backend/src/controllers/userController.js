@@ -85,7 +85,7 @@ exports.requestPasswordReset = async (req, res) => {
 exports.updateUserAuth = async (req, res) => {
     try{
 
-        const {name, phone/*, email*/} = req.body;
+        const {name, phone/*\, email*/} = req.body;
         const user = req.user;
        
         // Atualiza os dados do Utilizador
