@@ -492,3 +492,39 @@
 .category-list::-webkit-scrollbar-thumb:hover {
     background: #a1a1a1;
 }
+
+.title-icon {
+    margin-right: 10px;
+    color: rgb(146, 40, 26);
+}
+
+.section-icon {
+    margin-right: 8px;
+    color: rgb(146, 40, 26);
+}
+
+.input-icon {
+    margin-right: 8px;
+    color: #6b7280;
+}
+
+.button-icon {
+    margin-right: 6px;
+}
+
+.card-icon {
+    margin-right: 6px;
+    color: #6b7280;
+}
+
+.status-active {
+    color: #059669;
+}
+
+.status-inactive {
+    color: #dc2626;
+}
+
+.action-icon {
+    margin-right: 4px;
+}

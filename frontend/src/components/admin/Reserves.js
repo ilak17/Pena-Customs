@@ -6,6 +6,7 @@ function Reserves() {
     const [reserves, setReserves] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
     const [editingReserve, setEditingReserve] = useState(null);
@@ -20,12 +21,8 @@ function Reserves() {
         { value: 'cancelled', label: 'Cancelada' }
     ];
 
-    useEffect(() => {
-        fetchReserves();
-    }, []);
-
     const fetchReserves = async () => {
-        try {
+        try{
             const token = localStorage.getItem('token');
             const response = await fetch('http://localhost:3000/reserve', {
                 headers: {
@@ -38,23 +35,42 @@ function Reserves() {
             }
 
             const data = await response.json();
-            console.log('Dados recebidos:', data);
-
             if (data.success) {
                 const reservesData = Array.isArray(data.message) ? data.message : 
                                    Array.isArray(data.reserves) ? data.reserves : [];
                 
-                console.log('Reservas processadas:', reservesData);
                 setReserves(reservesData);
+                setLoading(false);
             } else {
                 throw new Error(data.message || 'Erro ao carregar reservas');
             }
-            setLoading(false);
         } catch (err) {
             console.error('Erro completo:', err);
             setError(err.message || 'Erro ao carregar reservas');
             setLoading(false);
         }
+    };
+
+    useEffect(() => {
+        fetchReserves();
+    }, []);
+
+    // Função para mostrar mensagem e recarregar dados
+    const showMessageAndReload = (message, isError = false) => {
+        if (isError) {
+            setError(message);
+            setSuccess(null);
+        } else {
+            setSuccess(message);
+            setError(null);
+        }
+
+        // Limpa a mensagem e recarrega os dados após 3 segundos
+        setTimeout(() => {
+            setError(null);
+            setSuccess(null);
+            fetchReserves();
+        }, 3000);
     };
 
     const handleStatusChange = async (reserveSKU, newStatus) => {
@@ -75,14 +91,12 @@ function Reserves() {
 
             const data = await response.json();
             if (data.success) {
-                setReserves(reserves.map(reserve => 
-                    reserve.sku === reserveSKU ? { ...reserve, status: newStatus } : reserve
-                ));
+                showMessageAndReload('Estado da reserva atualizado com sucesso!');
             } else {
                 throw new Error(data.message || 'Erro ao atualizar estado da reserva');
             }
         } catch (err) {
-            setError(err.message || 'Erro ao atualizar estado da reserva');
+            showMessageAndReload(err.message || 'Erro ao atualizar estado da reserva', true);
         }
     };
 
@@ -100,22 +114,31 @@ function Reserves() {
     };
 
     const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
         const date = new Date(dateString);
         return date.toLocaleString('pt-PT', {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric',
             hour: '2-digit',
-            minute: '2-digit'
+            minute: '2-digit',
+            timeZone: 'UTC'
         });
+    };
+
+    const formatDateForInput = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        // Converte diretamente para o formato do input mantendo a hora UTC
+        return date.toISOString().slice(0, 16);
     };
 
     const filteredReserves = reserves.filter(reserve => {
         if (!reserve) return false;
         
         const matchesSearch = (
-            (reserve.client?.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (reserve.services || []).some(service => 
+            (reserve.clientID?.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (reserve.serviceID || []).some(service => 
                 (service.name || '').toLowerCase().includes(searchTerm.toLowerCase())
             )
         );
@@ -147,12 +170,12 @@ function Reserves() {
 
                 const data = await response.json();
                 if (data.success) {
-                    setReserves(reserves.filter(reserve => reserve.sku !== sku));
+                    showMessageAndReload('Reserva excluída com sucesso!');
                 } else {
                     throw new Error(data.message || 'Erro ao excluir reserva');
                 }
             } catch (err) {
-                setError(err.message || 'Erro ao excluir reserva');
+                showMessageAndReload(err.message || 'Erro ao excluir reserva', true);
             }
         }
     };
@@ -167,16 +190,17 @@ function Reserves() {
         try {
             const token = localStorage.getItem('token');
             
-            // Preparar o corpo da requisição apenas com os campos preenchidos
             const updateData = {
-                startTime: editingReserve.startTime,
                 status: editingReserve.status,
                 addComent: editingReserve.addComent
             };
 
-            // Adicionar endTime apenas se estiver preenchido
+            if (editingReserve.startTime) {
+                updateData.startTime = new Date(editingReserve.startTime).toISOString();
+            }
+
             if (editingReserve.endTime) {
-                updateData.endTime = editingReserve.endTime;
+                updateData.endTime = new Date(editingReserve.endTime).toISOString();
             }
 
             const response = await fetch(`http://localhost:3000/reserve/${editingReserve.sku}`, {
@@ -194,16 +218,14 @@ function Reserves() {
 
             const data = await response.json();
             if (data.success) {
-                setReserves(reserves.map(reserve => 
-                    reserve.sku === editingReserve.sku ? { ...reserve, ...data.reserve } : reserve
-                ));
                 setShowEditModal(false);
                 setEditingReserve(null);
+                showMessageAndReload('Reserva atualizada com sucesso!');
             } else {
                 throw new Error(data.message || 'Erro ao atualizar reserva');
             }
         } catch (err) {
-            setError(err.message || 'Erro ao atualizar reserva');
+            showMessageAndReload(err.message || 'Erro ao atualizar reserva', true);
         }
     };
 
@@ -212,6 +234,12 @@ function Reserves() {
 
     return (
         <div className="reserves-container">
+            {(error || success) && (
+                <div className={`message ${error ? 'error' : 'success'}`}>
+                    {error || success}
+                </div>
+            )}
+            
             <div className="reserves-header">
                 <h2>Gestão de Reservas</h2>
                 <div className="filters">
@@ -251,8 +279,8 @@ function Reserves() {
                     <tbody>
                         {filteredReserves.map(reserve => (
                             <tr key={reserve.sku}>
-                                <td>{reserve.client?.name || 'N/A'}</td>
-                                <td>{reserve.services?.map(service => service.name).join(', ') || 'N/A'}</td>
+                                <td>{reserve.clientID?.name || 'N/A'}</td>
+                                <td>{reserve.serviceID?.map(service => service.name).join(', ') || 'N/A'}</td>
                                 <td>{formatDate(reserve.startTime)}</td>
                                 <td>{formatDate(reserve.endTime)}</td>
                                 <td>
@@ -326,22 +354,30 @@ function Reserves() {
                                 <label>Data e Hora de Início:</label>
                                 <input
                                     type="datetime-local"
-                                    value={new Date(editingReserve.startTime).toISOString().slice(0, 16)}
-                                    onChange={(e) => setEditingReserve({
-                                        ...editingReserve,
-                                        startTime: e.target.value
-                                    })}
+                                    value={formatDateForInput(editingReserve.startTime)}
+                                    onChange={(e) => {
+                                        const selectedDate = new Date(e.target.value);
+                                        const utcDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
+                                        setEditingReserve({
+                                            ...editingReserve,
+                                            startTime: utcDate.toISOString()
+                                        });
+                                    }}
                                 />
                             </div>
                             <div className="form-group">
                                 <label>Data e Hora de Fim (opcional):</label>
                                 <input
                                     type="datetime-local"
-                                    value={editingReserve.endTime ? new Date(editingReserve.endTime).toISOString().slice(0, 16) : ''}
-                                    onChange={(e) => setEditingReserve({
-                                        ...editingReserve,
-                                        endTime: e.target.value || null
-                                    })}
+                                    value={formatDateForInput(editingReserve.endTime)}
+                                    onChange={(e) => {
+                                        const selectedDate = new Date(e.target.value);
+                                        const utcDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
+                                        setEditingReserve({
+                                            ...editingReserve,
+                                            endTime: utcDate.toISOString()
+                                        });
+                                    }}
                                 />
                             </div>
                             <div className="form-group">
@@ -355,7 +391,14 @@ function Reserves() {
                                 />
                             </div>
                             <div className="modal-buttons">
-                                <button type="submit" className="save-button">Salvar</button>
+                                <button type="submit" className="save-button"
+                                    onClick={() => {
+                                        setShowEditModal(false);
+                                        setEditingReserve(null);
+                                    }}
+                                    >
+                                        Salvar
+                                </button>
                                 <button 
                                     type="button" 
                                     className="cancel-button"

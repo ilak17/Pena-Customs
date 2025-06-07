@@ -91,13 +91,21 @@ function CreateReserve() {
     setSuccess('');
 
     try {
+      const submissionData = { ...formData };
+      
+      // Formatar a data manualmente no formato exato requerido
+      if (submissionData.dateTime) {
+        const [datePart, timePart] = submissionData.dateTime.split('T');
+        submissionData.dateTime = `${datePart}T${timePart}:00Z`;
+      }
+
       const response = await fetch('http://localhost:3000/reserve', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(submissionData)
       });
 
       const data = await response.json();

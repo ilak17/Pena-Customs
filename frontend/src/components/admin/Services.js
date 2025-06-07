@@ -1,5 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { FaSearch, FaInfoCircle } from 'react-icons/fa';
+import { 
+    FaSearch, 
+    FaInfoCircle, 
+    FaWrench, 
+    FaTools,
+    FaClock,
+    FaEuroSign,
+    FaImage,
+    FaFileAlt,
+    FaCheck,
+    FaBan,
+    FaPlus,
+    FaEdit,
+    FaTrashAlt
+} from 'react-icons/fa';
 import '../../styles/admin/Services.css';
 
 const AVAILABLE_CATEGORIES = [
@@ -288,14 +302,30 @@ const Services = () => {
 
     return (
         <div className="service-container">
-            <h2 className="service-title">Gerenciar Serviços</h2>
+            <h2 className="service-title">
+                <FaTools className="title-icon" /> 
+                Gerenciar Serviços
+            </h2>
             
             <div className="service-layout">
                 <div className="service-form-section">
-                    <h3>{editingId ? 'Editar Serviço' : 'Adicionar Novo Serviço'}</h3>
+                    <h3>
+                        {editingId ? (
+                            <>
+                                <FaEdit className="section-icon" /> 
+                                Editar Serviço
+                            </>
+                        ) : (
+                            <>
+                                <FaPlus className="section-icon" /> 
+                                Adicionar Novo Serviço
+                            </>
+                        )}
+                    </h3>
                     <form onSubmit={handleSubmit} className="service-form">
                         <div className="form-group">
                             <label htmlFor="category">
+                                <FaWrench className="input-icon" />
                                 Categoria
                                 <FaInfoCircle 
                                     className="info-icon" 
@@ -331,7 +361,10 @@ const Services = () => {
                             </div>
                         </div>
                         <div className="form-group">
-                            <label htmlFor="name">Nome do Serviço</label>
+                            <label htmlFor="name">
+                                <FaTools className="input-icon" />
+                                Nome do Serviço
+                            </label>
                             <input
                                 id="name"
                                 type="text"
@@ -343,7 +376,10 @@ const Services = () => {
                             />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="price">Preço (€)</label>
+                            <label htmlFor="price">
+                                <FaEuroSign className="input-icon" />
+                                Preço (€)
+                            </label>
                             <input
                                 id="price"
                                 type="number"
@@ -356,6 +392,7 @@ const Services = () => {
                         </div>
                         <div className="form-group">
                             <label htmlFor="estimatedTime">
+                                <FaClock className="input-icon" />
                                 Tempo Estimado
                                 <FaInfoCircle 
                                     className="info-icon" 
@@ -384,7 +421,10 @@ const Services = () => {
                             </div>
                         </div>
                         <div className="form-group">
-                            <label htmlFor="status">Status</label>
+                            <label htmlFor="status">
+                                <FaCheck className="input-icon" />
+                                Status
+                            </label>
                             <select
                                 id="status"
                                 name="status"
@@ -392,12 +432,19 @@ const Services = () => {
                                 onChange={handleInputChange}
                                 required
                             >
-                                <option value="available">Ativo</option>
-                                <option value="unavailable">Inativo</option>
+                                <option value="available">
+                                    <span>Ativo</span>
+                                </option>
+                                <option value="unavailable">
+                                    <span>Inativo</span>
+                                </option>
                             </select>
                         </div>
                         <div className="form-group">
-                            <label htmlFor="image">Imagem</label>
+                            <label htmlFor="image">
+                                <FaImage className="input-icon" />
+                                Imagem
+                            </label>
                             <input
                                 id="image"
                                 type="file"
@@ -407,7 +454,10 @@ const Services = () => {
                             />
                         </div>
                         <div className="form-group full-width">
-                            <label htmlFor="description">Descrição</label>
+                            <label htmlFor="description">
+                                <FaFileAlt className="input-icon" />
+                                Descrição
+                            </label>
                             <textarea
                                 id="description"
                                 name="description"
@@ -418,9 +468,24 @@ const Services = () => {
                             />
                         </div>
                         <div className="form-buttons">
-                            <button type="submit">{editingId ? 'Atualizar' : 'Adicionar'} Serviço</button>
+                            <button type="submit">
+                                {editingId ? (
+                                    <>
+                                        <FaEdit className="button-icon" />
+                                        Atualizar Serviço
+                                    </>
+                                ) : (
+                                    <>
+                                        <FaPlus className="button-icon" />
+                                        Adicionar Serviço
+                                    </>
+                                )}
+                            </button>
                             {editingId && (
-                                <button type="button" onClick={resetForm}>Cancelar</button>
+                                <button type="button" onClick={resetForm}>
+                                    <FaBan className="button-icon" />
+                                    Cancelar
+                                </button>
                             )}
                         </div>
                     </form>
@@ -449,8 +514,12 @@ const Services = () => {
                                 <p>Tempo Estimado: {service.estimatedTime}</p>
                                 <p>Status: {service.status === 'available' ? 'Ativo' : 'Inativo'}</p>
                                 <div className="service-actions">
-                                    <button onClick={() => handleEdit(service)}>Editar</button>
-                                    <button onClick={() => handleDelete(service._id)}>Excluir</button>
+                                    <button onClick={() => handleEdit(service)}>
+                                        <FaEdit className="action-icon" /> Editar
+                                    </button>
+                                    <button onClick={() => handleDelete(service._id)}>
+                                        <FaTrashAlt className="action-icon" /> Excluir
+                                    </button>
                                 </div>
                             </div>
                         ))}

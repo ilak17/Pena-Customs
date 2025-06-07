@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaUsers, FaCar, FaCalendarAlt, FaFileAlt, FaSignOutAlt } from 'react-icons/fa';
+import { FaUsers, FaWrench, FaCalendarAlt, FaFileAlt, FaSignOutAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import Users from '../../components/admin/Users';
 import Reserves from '../../components/admin/Reserves';
@@ -112,7 +112,7 @@ function Dashboard() {
                                 </div>
                             </div>
                             <div className="stat-card">
-                                <FaCar className="stat-icon" />
+                                <FaWrench className="stat-icon" />
                                 <div className="stat-info">
                                     <h3>Serviços Disponíveis</h3>
                                     <p>{statistics.totalServices}</p>
@@ -192,7 +192,7 @@ function Dashboard() {
                         className={`nav-item ${activeSection === 'services' ? 'active' : ''}`}
                         onClick={() => setActiveSection('services')}
                     >
-                        <FaCar /> Serviços
+                        <FaWrench /> Serviços
                     </button>
                     <button
                         className={`nav-item ${activeSection === 'reserves' ? 'active' : ''}`}

@@ -81,9 +81,9 @@
     font-size: 1.2rem;
 }
 
-.form-group:nth-child(1) label::before { content: '🚗'; }
-.form-group:nth-child(2) label::before { content: '🏢'; }
-.form-group:nth-child(3) label::before { content: '🔑'; }
+.vehicle-form .form-group:nth-child(1) label::before { content: '🚗'; }
+.vehicle-form .form-group:nth-child(2) label::before { content: '🏢'; }
+.vehicle-form .form-group:nth-child(3) label::before { content: '🔑'; }
 
 .form-group input {
     width: 100%;
