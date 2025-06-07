@@ -82,13 +82,15 @@ function MyReserves() {
 
   // Função para formatar a data
   const formatDate = (date) => {
-    return new Date(date).toLocaleString('pt-PT', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    const utcDate = new Date(date);
+    // Ajustar para UTC
+    const utcYear = utcDate.getUTCFullYear();
+    const utcMonth = String(utcDate.getUTCMonth() + 1).padStart(2, '0');
+    const utcDay = String(utcDate.getUTCDate()).padStart(2, '0');
+    const utcHours = String(utcDate.getUTCHours()).padStart(2, '0');
+    const utcMinutes = String(utcDate.getUTCMinutes()).padStart(2, '0');
+
+    return `${utcDay}/${utcMonth}/${utcYear} ${utcHours}:${utcMinutes}`;
   };
 
   // Função para obter a cor do status
