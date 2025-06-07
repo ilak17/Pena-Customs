@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaEdit, FaTrash, FaCheck, FaTimes, FaSearch, FaUserPlus } from 'react-icons/fa';
+import { FaTrash, FaCheck, FaTimes, FaSearch } from 'react-icons/fa';
 import '../../styles/admin/Users.css';
 
 function Users() {
@@ -7,7 +7,6 @@ function Users() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedUser, setSelectedUser] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [usersPerPage] = useState(10);
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
