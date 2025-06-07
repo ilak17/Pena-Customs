@@ -1,6 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { FaSearch } from 'react-icons/fa';
+import { FaSearch, FaInfoCircle } from 'react-icons/fa';
 import '../../styles/admin/Services.css';
+
+const AVAILABLE_CATEGORIES = [
+    'Mecânica Geral',
+    'Mecânica Avançada',
+    'Elétrica e Eletrónica',
+    'Manutenção Rápida',
+    'Rodas e Travões',
+    'Limpeza e Estética',
+    'Climatização e Conforto',
+    'Chapa e Pintura',
+    'Personalização',
+    'Diagnóstico e Inspeção',
+    'Outro'
+];
 
 const Services = () => {
     const [services, setServices] = useState([]);
@@ -19,6 +33,17 @@ const Services = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(8);
+    const [timeError, setTimeError] = useState('');
+    const [showCategoryList, setShowCategoryList] = useState(false);
+    const [filteredCategories, setFilteredCategories] = useState(AVAILABLE_CATEGORIES);
+
+    // Regex para validação do tempo
+    const timeRegex = /^(\d+d)?(?:-(\d+h))?(?:-(\d+m))?$|^(\d+h)?(?:-(\d+m))?$|^(\d+m)$/;
+
+    const validateTime = (value) => {
+        if (!value) return false;
+        return timeRegex.test(value);
+    };
 
     const fetchServices = async () => {
         try {
@@ -52,14 +77,81 @@ const Services = () => {
 
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
+        
+        if (name === 'estimatedTime') {
+            // Remove espaços e converte para minúsculo
+            const formattedValue = value.toLowerCase().replace(/\s+/g, '');
+            setFormData(prev => ({
+                ...prev,
+                [name]: formattedValue
+            }));
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                [name]: files ? files[0] : value
+            }));
+        }
+    };
+
+    const handleTimeBlur = (e) => {
+        const value = e.target.value;
+        if (value && !validateTime(value)) {
+            setTimeError('Formato inválido. Use: 1d-2h-30m, 2h-30m, ou 30m');
+        } else {
+            setTimeError('');
+        }
+    };
+
+    const handleCategoryChange = (e) => {
+        const value = e.target.value;
         setFormData(prev => ({
             ...prev,
-            [name]: files ? files[0] : value
+            category: value
         }));
+        
+        if (!value.trim()) {
+            // Se o campo estiver vazio, mostra todas as categorias
+            setFilteredCategories(AVAILABLE_CATEGORIES);
+        } else {
+            // Filtra as categorias baseado no input
+            const filtered = AVAILABLE_CATEGORIES.filter(cat => 
+                cat.toLowerCase().includes(value.toLowerCase())
+            );
+            setFilteredCategories(filtered);
+        }
+        setShowCategoryList(true);
+    };
+
+    const handleCategoryFocus = () => {
+        // Sempre mostra todas as categorias ao focar
+        setFilteredCategories(AVAILABLE_CATEGORIES);
+        setShowCategoryList(true);
+    };
+
+    const handleCategorySelect = (category) => {
+        setFormData(prev => ({
+            ...prev,
+            category
+        }));
+        setShowCategoryList(false);
+    };
+
+    const handleCategoryBlur = () => {
+        // Pequeno delay para permitir o clique na lista
+        setTimeout(() => {
+            setShowCategoryList(false);
+        }, 200);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Validação adicional antes de enviar
+        if (!validateTime(formData.estimatedTime)) {
+            setTimeError('Formato inválido. Use: 1d-2h-30m, 2h-30m, ou 30m');
+            return;
+        }
+
         const formDataToSend = new FormData();
         
         Object.keys(formData).forEach(key => {
@@ -203,16 +295,40 @@ const Services = () => {
                     <h3>{editingId ? 'Editar Serviço' : 'Adicionar Novo Serviço'}</h3>
                     <form onSubmit={handleSubmit} className="service-form">
                         <div className="form-group">
-                            <label htmlFor="category">Categoria</label>
-                            <input
-                                id="category"
-                                type="text"
-                                name="category"
-                                placeholder="Ex: Manutenção"
-                                value={formData.category}
-                                onChange={handleInputChange}
-                                required
-                            />
+                            <label htmlFor="category">
+                                Categoria
+                                <FaInfoCircle 
+                                    className="info-icon" 
+                                    title="Digite para filtrar ou selecione uma categoria existente"
+                                />
+                            </label>
+                            <div className="category-input-container">
+                                <input
+                                    id="category"
+                                    type="text"
+                                    name="category"
+                                    placeholder="Digite ou selecione uma categoria"
+                                    value={formData.category}
+                                    onChange={handleCategoryChange}
+                                    onFocus={handleCategoryFocus}
+                                    onBlur={handleCategoryBlur}
+                                    autoComplete="off"
+                                    required
+                                />
+                                {showCategoryList && filteredCategories.length > 0 && (
+                                    <div className="category-list">
+                                        {filteredCategories.map((cat, index) => (
+                                            <div
+                                                key={index}
+                                                className="category-item"
+                                                onClick={() => handleCategorySelect(cat)}
+                                            >
+                                                {cat}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                         <div className="form-group">
                             <label htmlFor="name">Nome do Serviço</label>
@@ -239,16 +355,33 @@ const Services = () => {
                             />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="estimatedTime">Tempo Estimado</label>
+                            <label htmlFor="estimatedTime">
+                                Tempo Estimado
+                                <FaInfoCircle 
+                                    className="info-icon" 
+                                    title="Formatos aceitos: 1d-2h-30m, 2h-30m, ou 30m"
+                                />
+                            </label>
                             <input
                                 id="estimatedTime"
                                 type="text"
                                 name="estimatedTime"
-                                placeholder="Ex: 1 hora"
+                                placeholder="Ex: 1d-2h-30m"
                                 value={formData.estimatedTime}
                                 onChange={handleInputChange}
+                                onBlur={handleTimeBlur}
                                 required
+                                className={timeError ? 'error' : ''}
                             />
+                            {timeError && <div className="error-message">{timeError}</div>}
+                            <div className="helper-text">
+                                Formatos aceitos:
+                                <ul>
+                                    <li>1d-2h-30m (1 dia, 2 horas e 30 minutos)</li>
+                                    <li>2h-30m (2 horas e 30 minutos)</li>
+                                    <li>30m (30 minutos)</li>
+                                </ul>
+                            </div>
                         </div>
                         <div className="form-group">
                             <label htmlFor="status">Status</label>
