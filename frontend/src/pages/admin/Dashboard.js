@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Users from '../../components/admin/Users';
 import Reserves from '../../components/admin/Reserves';
 import Services from '../../components/admin/Services';
+import Calendar from '../../components/admin/Calendar';
 import '../../styles/admin/Dashboard.css';
 
 function Dashboard() {
@@ -18,8 +19,10 @@ function Dashboard() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchStatistics();
-    }, []);
+        if (activeSection === 'overview') {
+            fetchStatistics();
+        }
+    }, [activeSection]);
 
     const fetchStatistics = async () => {
         try {
@@ -57,7 +60,6 @@ function Dashboard() {
             const token = localStorage.getItem('token');
             const queryParams = new URLSearchParams();
             
-            // Converte as datas para o formato ISO e ajusta para o final do dia para endDate
             if (startDate) {
                 const startDateTime = new Date(startDate);
                 startDateTime.setHours(0, 0, 0, 0);
@@ -100,27 +102,32 @@ function Dashboard() {
         switch (activeSection) {
             case 'overview':
                 return (
-                    <div className="overview-grid">
-                        <div className="stat-card">
-                            <FaUsers className="stat-icon" />
-                            <div className="stat-info">
-                                <h3>Total de Utilizadores</h3>
-                                <p>{statistics.totalUsers}</p>
+                    <div className="overview-container">
+                        <div className="overview-grid">
+                            <div className="stat-card">
+                                <FaUsers className="stat-icon" />
+                                <div className="stat-info">
+                                    <h3>Total de Utilizadores</h3>
+                                    <p>{statistics.totalUsers}</p>
+                                </div>
+                            </div>
+                            <div className="stat-card">
+                                <FaCar className="stat-icon" />
+                                <div className="stat-info">
+                                    <h3>Serviços Disponíveis</h3>
+                                    <p>{statistics.totalServices}</p>
+                                </div>
+                            </div>
+                            <div className="stat-card">
+                                <FaCalendarAlt className="stat-icon" />
+                                <div className="stat-info">
+                                    <h3>Reservas Totais</h3>
+                                    <p>{statistics.totalReserves}</p>
+                                </div>
                             </div>
                         </div>
-                        <div className="stat-card">
-                            <FaCar className="stat-icon" />
-                            <div className="stat-info">
-                                <h3>Serviços Disponíveis</h3>
-                                <p>{statistics.totalServices}</p>
-                            </div>
-                        </div>
-                        <div className="stat-card">
-                            <FaCalendarAlt className="stat-icon" />
-                            <div className="stat-info">
-                                <h3>Reservas Totais</h3>
-                                <p>{statistics.totalReserves}</p>
-                            </div>
+                        <div className="calendar-wrapper">
+                            <Calendar />
                         </div>
                     </div>
                 );
@@ -205,9 +212,15 @@ function Dashboard() {
                 </button>
             </aside>
             <main className="main-content">
-                <header className="dashboard-header">
-                    <h1>Painel de Administração</h1>
-                </header>
+                <div className="dashboard-header">
+                    <h1>
+                        {activeSection === 'overview' && 'Visão Geral'}
+                        {activeSection === 'users' && 'Gestão de Utilizadores'}
+                        {activeSection === 'services' && 'Gestão de Serviços'}
+                        {activeSection === 'reserves' && 'Gestão de Reservas'}
+                        {activeSection === 'reports' && 'Relatórios'}
+                    </h1>
+                </div>
                 <div className="content-area">
                     {renderContent()}
                 </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaCheck, FaTimes, FaClock } from 'react-icons/fa';
+import { FaCheck, FaTimes, FaClock, FaEdit, FaTrash } from 'react-icons/fa';
 import '../../styles/admin/Reserves.css';
 
 function Reserves() {
@@ -8,6 +8,17 @@ function Reserves() {
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
+    const [editingReserve, setEditingReserve] = useState(null);
+    const [showEditModal, setShowEditModal] = useState(false);
+
+    const statusOptions = [
+        { value: 'pending', label: 'Pendente' },
+        { value: 'confirmed', label: 'Confirmada' },
+        { value: 'running', label: 'Em Andamento' },
+        { value: 'waiting', label: 'Em Espera' },
+        { value: 'completed', label: 'Concluída' },
+        { value: 'cancelled', label: 'Cancelada' }
+    ];
 
     useEffect(() => {
         fetchReserves();
@@ -16,7 +27,7 @@ function Reserves() {
     const fetchReserves = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:3000/admin/reserves', {
+            const response = await fetch('http://localhost:3000/reserve', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -46,10 +57,10 @@ function Reserves() {
         }
     };
 
-    const handleStatusChange = async (reserveId, newStatus) => {
+    const handleStatusChange = async (reserveSKU, newStatus) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:3000/admin/update-reserve/${reserveId}`, {
+            const response = await fetch(`http://localhost:3000/reserve/${reserveSKU}`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -65,7 +76,7 @@ function Reserves() {
             const data = await response.json();
             if (data.success) {
                 setReserves(reserves.map(reserve => 
-                    reserve._id === reserveId ? { ...reserve, status: newStatus } : reserve
+                    reserve.sku === reserveSKU ? { ...reserve, status: newStatus } : reserve
                 ));
             } else {
                 throw new Error(data.message || 'Erro ao atualizar estado da reserva');
@@ -114,6 +125,88 @@ function Reserves() {
             : matchesSearch && reserve.status === filterStatus;
     });
 
+    const handleEdit = (reserve) => {
+        setEditingReserve(reserve);
+        setShowEditModal(true);
+    };
+
+    const handleDelete = async (sku) => {
+        if (window.confirm('Tem certeza que deseja excluir esta reserva?')) {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`http://localhost:3000/reserve/${sku}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao excluir reserva');
+                }
+
+                const data = await response.json();
+                if (data.success) {
+                    setReserves(reserves.filter(reserve => reserve.sku !== sku));
+                } else {
+                    throw new Error(data.message || 'Erro ao excluir reserva');
+                }
+            } catch (err) {
+                setError(err.message || 'Erro ao excluir reserva');
+            }
+        }
+    };
+
+    const getStatusLabel = (status) => {
+        const option = statusOptions.find(opt => opt.value === status);
+        return option ? option.label : status;
+    };
+
+    const handleUpdateReserve = async (e) => {
+        e.preventDefault();
+        try {
+            const token = localStorage.getItem('token');
+            
+            // Preparar o corpo da requisição apenas com os campos preenchidos
+            const updateData = {
+                startTime: editingReserve.startTime,
+                status: editingReserve.status,
+                addComent: editingReserve.addComent
+            };
+
+            // Adicionar endTime apenas se estiver preenchido
+            if (editingReserve.endTime) {
+                updateData.endTime = editingReserve.endTime;
+            }
+
+            const response = await fetch(`http://localhost:3000/reserve/${editingReserve.sku}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updateData)
+            });
+
+            if (!response.ok) {
+                throw new Error('Erro ao atualizar reserva');
+            }
+
+            const data = await response.json();
+            if (data.success) {
+                setReserves(reserves.map(reserve => 
+                    reserve.sku === editingReserve.sku ? { ...reserve, ...data.reserve } : reserve
+                ));
+                setShowEditModal(false);
+                setEditingReserve(null);
+            } else {
+                throw new Error(data.message || 'Erro ao atualizar reserva');
+            }
+        } catch (err) {
+            setError(err.message || 'Erro ao atualizar reserva');
+        }
+    };
+
     if (loading) return <div className="loading">A carregar reservas...</div>;
     if (error) return <div className="error">{error}</div>;
 
@@ -157,7 +250,7 @@ function Reserves() {
                     </thead>
                     <tbody>
                         {filteredReserves.map(reserve => (
-                            <tr key={reserve._id}>
+                            <tr key={reserve.sku}>
                                 <td>{reserve.client?.name || 'N/A'}</td>
                                 <td>{reserve.services?.map(service => service.name).join(', ') || 'N/A'}</td>
                                 <td>{formatDate(reserve.startTime)}</td>
@@ -166,9 +259,7 @@ function Reserves() {
                                     <div className="status-cell">
                                         {getStatusIcon(reserve.status)}
                                         <span className={`status-text ${reserve.status}`}>
-                                            {reserve.status === 'pending' ? 'Pendente' :
-                                             reserve.status === 'completed' ? 'Concluída' :
-                                             'Cancelada'}
+                                            {getStatusLabel(reserve.status)}
                                         </span>
                                     </div>
                                 </td>
@@ -178,18 +269,30 @@ function Reserves() {
                                             <>
                                                 <button
                                                     className="complete-button"
-                                                    onClick={() => handleStatusChange(reserve._id, 'completed')}
+                                                    onClick={() => handleStatusChange(reserve.sku, 'completed')}
                                                 >
                                                     <FaCheck /> Concluir
                                                 </button>
                                                 <button
                                                     className="cancel-button"
-                                                    onClick={() => handleStatusChange(reserve._id, 'cancelled')}
+                                                    onClick={() => handleStatusChange(reserve.sku, 'cancelled')}
                                                 >
                                                     <FaTimes /> Cancelar
                                                 </button>
                                             </>
                                         )}
+                                        <button
+                                            className="edit-button"
+                                            onClick={() => handleEdit(reserve)}
+                                        >
+                                            <FaEdit /> Editar
+                                        </button>
+                                        <button
+                                            className="delete-button"
+                                            onClick={() => handleDelete(reserve.sku)}
+                                        >
+                                            <FaTrash /> Excluir
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -197,6 +300,77 @@ function Reserves() {
                     </tbody>
                 </table>
             </div>
+            {showEditModal && editingReserve && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <h3>Editar Reserva</h3>
+                        <form onSubmit={handleUpdateReserve}>
+                            <div className="form-group">
+                                <label>Estado:</label>
+                                <select
+                                    value={editingReserve.status}
+                                    onChange={(e) => setEditingReserve({
+                                        ...editingReserve,
+                                        status: e.target.value
+                                    })}
+                                    className="status-select"
+                                >
+                                    {statusOptions.map(option => (
+                                        <option key={option.value} value={option.value}>
+                                            {option.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label>Data e Hora de Início:</label>
+                                <input
+                                    type="datetime-local"
+                                    value={new Date(editingReserve.startTime).toISOString().slice(0, 16)}
+                                    onChange={(e) => setEditingReserve({
+                                        ...editingReserve,
+                                        startTime: e.target.value
+                                    })}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Data e Hora de Fim (opcional):</label>
+                                <input
+                                    type="datetime-local"
+                                    value={editingReserve.endTime ? new Date(editingReserve.endTime).toISOString().slice(0, 16) : ''}
+                                    onChange={(e) => setEditingReserve({
+                                        ...editingReserve,
+                                        endTime: e.target.value || null
+                                    })}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Comentários Adicionais:</label>
+                                <textarea
+                                    value={editingReserve.addComent || ''}
+                                    onChange={(e) => setEditingReserve({
+                                        ...editingReserve,
+                                        addComent: e.target.value
+                                    })}
+                                />
+                            </div>
+                            <div className="modal-buttons">
+                                <button type="submit" className="save-button">Salvar</button>
+                                <button 
+                                    type="button" 
+                                    className="cancel-button"
+                                    onClick={() => {
+                                        setShowEditModal(false);
+                                        setEditingReserve(null);
+                                    }}
+                                >
+                                    Cancelar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

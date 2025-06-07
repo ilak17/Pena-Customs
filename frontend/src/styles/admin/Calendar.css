@@ -1,0 +1,368 @@
+.calendar-container {
+    background-color: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(146, 40, 26, 0.15);
+    margin-top: 1.5rem;
+}
+
+.calendar-loading,
+.calendar-error {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1.1rem;
+}
+
+.calendar-error {
+    color: rgb(146, 40, 26);
+}
+
+/* Estilos do FullCalendar */
+.fc {
+    max-width: 100%;
+    background: white;
+}
+
+.fc .fc-toolbar-title {
+    font-size: 1.5rem;
+    color: #1a1a1a;
+}
+
+.fc .fc-button-primary {
+    background-color: rgb(146, 40, 26);
+    border-color: rgb(146, 40, 26);
+}
+
+.fc .fc-button-primary:hover {
+    background-color: rgb(126, 34, 22);
+    border-color: rgb(126, 34, 22);
+}
+
+.fc .fc-button-primary:disabled {
+    background-color: #bdc3c7;
+    border-color: #bdc3c7;
+}
+
+/* Estilos base para todos os eventos */
+.fc-event {
+    cursor: pointer !important;
+    padding: 2px 4px !important;
+    font-size: 0.9em !important;
+    margin: 1px 0 !important;
+}
+
+/* Remove estilos padrão do FullCalendar */
+.fc-h-event {
+    background-color: transparent !important;
+    border: none !important;
+}
+
+.fc-daygrid-event {
+    background-color: transparent !important;
+    border: none !important;
+}
+
+.fc-timegrid-event {
+    background-color: transparent !important;
+    border: none !important;
+}
+
+/* Remove o ponto dos eventos */
+.fc-daygrid-event-dot {
+    display: none !important;
+}
+
+/* Estilos específicos para cada status */
+.fc-event[data-status="pending"] {
+    background-color: rgba(255, 215, 0, 0.2) !important;
+    border: 1px solid #ffd700 !important;
+    border-left: 3px solid #ffd700 !important;
+    color: #000 !important;
+}
+
+.fc-event[data-status="confirmed"] {
+    background-color: rgba(52, 152, 219, 0.2) !important;
+    border: 1px solid #3498db !important;
+    border-left: 3px solid #3498db !important;
+    color: #000 !important;
+}
+
+.fc-event[data-status="running"] {
+    background-color: rgba(155, 89, 182, 0.2) !important;
+    border: 1px solid #9b59b6 !important;
+    border-left: 3px solid #9b59b6 !important;
+    color: #000 !important;
+}
+
+.fc-event[data-status="waiting"] {
+    background-color: rgba(243, 156, 18, 0.2) !important;
+    border: 1px solid #f39c12 !important;
+    border-left: 3px solid #f39c12 !important;
+    color: #000 !important;
+}
+
+.fc-event[data-status="completed"] {
+    background-color: rgba(39, 174, 96, 0.2) !important;
+    border: 1px solid #27ae60 !important;
+    border-left: 3px solid #27ae60 !important;
+    color: #000 !important;
+}
+
+.fc-event[data-status="cancelled"] {
+    background-color: rgba(231, 76, 60, 0.2) !important;
+    border: 1px solid #e74c3c !important;
+    border-left: 3px solid #e74c3c !important;
+    color: #000 !important;
+}
+
+/* Estilos para o conteúdo do evento */
+.fc-event-main {
+    padding: 0 !important;
+}
+
+.fc-event-title-container {
+    padding: 2px 4px !important;
+}
+
+.fc-event-title {
+    font-weight: 500 !important;
+    color: #000 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.fc-event-time {
+    font-weight: normal !important;
+    color: #000 !important;
+    padding: 0 4px !important;
+}
+
+/* Efeito hover */
+.fc-event:hover {
+    filter: brightness(0.95) !important;
+}
+
+/* Ajustes para diferentes visualizações */
+.fc-daygrid-event-harness {
+    margin: 2px 0 !important;
+}
+
+.fc-timegrid-event-harness {
+    margin: 0 !important;
+}
+
+/* Força o modo de exibição em bloco para todos os eventos */
+.fc-daygrid-block-event .fc-event-time,
+.fc-daygrid-block-event .fc-event-title {
+    padding: 1px 4px !important;
+}
+
+/* Ajustes para eventos de dia inteiro */
+.fc-daygrid-day-events .fc-event {
+    margin: 1px 2px !important;
+    border-radius: 3px !important;
+}
+
+.fc-day-today {
+    background-color: #f8f1f0 !important;
+}
+
+.fc-day-past {
+    background-color: #ffffff;
+}
+
+.fc-day-future {
+    background-color: #ffffff;
+}
+
+.fc th {
+    padding: 10px 0;
+    background-color: #f8f1f0;
+    color: #1a1a1a;
+    font-weight: 600;
+}
+
+.fc td {
+    border-color: #ecf0f1;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .calendar-container {
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+
+    .fc .fc-toolbar {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .fc .fc-toolbar-title {
+        font-size: 1.2rem;
+    }
+
+    .fc-event-title {
+        font-size: 0.85em !important;
+    }
+}
+
+/* Estilos do Modal */
+.calendar-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.calendar-modal {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    animation: modalSlideIn 0.3s ease forwards;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.calendar-modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.calendar-modal-header h2 {
+    margin: 0;
+    color: #1a1a1a;
+    font-size: 1.5rem;
+}
+
+.modal-close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #666;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.modal-close-btn:hover {
+    background-color: #f0f0f0;
+    color: #1a1a1a;
+}
+
+.calendar-modal-content {
+    padding: 1.5rem;
+}
+
+.modal-info-group {
+    margin-bottom: 1.25rem;
+}
+
+.modal-info-group:last-child {
+    margin-bottom: 0;
+}
+
+.modal-info-group label {
+    display: block;
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.modal-info-group p {
+    margin: 0;
+    color: #1a1a1a;
+    font-size: 1.1rem;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.status-badge.pending {
+    background-color: rgba(255, 215, 0, 0.2);
+    color: #ffd700;
+    border: 1px solid #ffd700;
+}
+
+.status-badge.confirmed {
+    background-color: rgba(52, 152, 219, 0.2);
+    color: #3498db;
+    border: 1px solid #3498db;
+}
+
+.status-badge.running {
+    background-color: rgba(155, 89, 182, 0.2);
+    color: #9b59b6;
+    border: 1px solid #9b59b6;
+}
+
+.status-badge.waiting {
+    background-color: rgba(243, 156, 18, 0.2);
+    color: #f39c12;
+    border: 1px solid #f39c12;
+}
+
+.status-badge.completed {
+    background-color: rgba(39, 174, 96, 0.2);
+    color: #27ae60;
+    border: 1px solid #27ae60;
+}
+
+.status-badge.cancelled {
+    background-color: rgba(231, 76, 60, 0.2);
+    color: #e74c3c;
+    border: 1px solid #e74c3c;
+}
+
+@media (max-width: 768px) {
+    .calendar-modal {
+        width: 95%;
+        margin: 1rem;
+    }
+
+    .calendar-modal-header {
+        padding: 1rem;
+    }
+
+    .calendar-modal-content {
+        padding: 1rem;
+    }
+
+    .modal-info-group {
+        margin-bottom: 1rem;
+    }
+} 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaEdit, FaTrash, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaCheck, FaTimes, FaSearch, FaUserPlus } from 'react-icons/fa';
 import '../../styles/admin/Users.css';
 
 function Users() {
@@ -8,6 +8,9 @@ function Users() {
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedUser, setSelectedUser] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [usersPerPage] = useState(10);
+    const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
 
     useEffect(() => {
         fetchUsers();
@@ -52,10 +55,12 @@ function Users() {
 
                 if (response.ok) {
                     setUsers(users.filter(user => user._id !== userId));
+                    showNotification('Utilizador eliminado com sucesso!', 'success');
                 } else {
                     throw new Error('Erro ao eliminar utilizador');
                 }
             } catch (err) {
+                showNotification('Erro ao eliminar utilizador', 'error');
                 setError('Erro ao eliminar utilizador');
             }
         }
@@ -82,27 +87,72 @@ function Users() {
                 setUsers(users.map(user => 
                     user._id === userId ? { ...user, isVerified: true } : user
                 ));
+                showNotification('Utilizador verificado com sucesso!', 'success');
             } else {
                 throw new Error(data.message || 'Erro ao verificar utilizador');
             }
         } catch (err) {
+            showNotification('Erro ao verificar utilizador', 'error');
             setError(err.message || 'Erro ao verificar utilizador');
         }
     };
 
-    const filteredUsers = users.filter(user =>
+    const showNotification = (message, type) => {
+        // Implementar sistema de notificações aqui
+        console.log(`${type}: ${message}`);
+    };
+
+    const handleSort = (key) => {
+        let direction = 'ascending';
+        if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+            direction = 'descending';
+        }
+        setSortConfig({ key, direction });
+    };
+
+    const sortedUsers = [...users].sort((a, b) => {
+        if (!sortConfig.key) return 0;
+        
+        const aValue = a[sortConfig.key];
+        const bValue = b[sortConfig.key];
+
+        if (aValue < bValue) return sortConfig.direction === 'ascending' ? -1 : 1;
+        if (aValue > bValue) return sortConfig.direction === 'ascending' ? 1 : -1;
+        return 0;
+    });
+
+    const filteredUsers = sortedUsers.filter(user =>
         user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.email?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    if (loading) return <div className="loading">A carregar utilizadores...</div>;
-    if (error) return <div className="error">{error}</div>;
+    // Paginação
+    const indexOfLastUser = currentPage * usersPerPage;
+    const indexOfFirstUser = indexOfLastUser - usersPerPage;
+    const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+    const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+
+    if (loading) return (
+        <div className="loading-container">
+            <div className="loading-spinner"></div>
+            <p>A carregar utilizadores...</p>
+        </div>
+    );
+    
+    if (error) return (
+        <div className="error-container">
+            <div className="error-icon">⚠️</div>
+            <p>{error}</p>
+            <button onClick={fetchUsers} className="retry-button">Tentar Novamente</button>
+        </div>
+    );
 
     return (
         <div className="users-container">
             <div className="users-header">
                 <h2>Gestão de Utilizadores</h2>
                 <div className="search-bar">
+                    <FaSearch className="search-icon" />
                     <input
                         type="text"
                         placeholder="Procurar utilizadores..."
@@ -116,29 +166,36 @@ function Users() {
                 <table className="users-table">
                     <thead>
                         <tr>
-                            <th>Nome</th>
-                            <th>Email</th>
+                            <th onClick={() => handleSort('name')}>
+                                Nome {sortConfig.key === 'name' && (sortConfig.direction === 'ascending' ? '↑' : '↓')}
+                            </th>
+                            <th onClick={() => handleSort('email')}>
+                                Email {sortConfig.key === 'email' && (sortConfig.direction === 'ascending' ? '↑' : '↓')}
+                            </th>
                             <th>Telefone</th>
                             <th>Verificado</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredUsers.map(user => (
+                        {currentUsers.map(user => (
                             <tr key={user._id}>
                                 <td>{user.name}</td>
                                 <td>{user.email}</td>
                                 <td>{user.phone}</td>
                                 <td>
                                     {user.isVerified ? (
-                                        <FaCheck className="verified-icon" />
+                                        <div className="verified-badge">
+                                            <FaCheck className="verified-icon" />
+                                            <span>Verificado</span>
+                                        </div>
                                     ) : (
                                         <button
                                             className="verify-button"
                                             onClick={() => handleVerifyUser(user._id)}
                                         >
                                             <FaTimes className="not-verified-icon" />
-                                            Verificar
+                                            <span>Verificar</span>
                                         </button>
                                     )}
                                 </td>
@@ -147,6 +204,7 @@ function Users() {
                                         <button
                                             className="delete-button"
                                             onClick={() => handleDeleteUser(user._id)}
+                                            title="Eliminar Utilizador"
                                         >
                                             <FaTrash />
                                         </button>
@@ -157,6 +215,24 @@ function Users() {
                     </tbody>
                 </table>
             </div>
+
+            {totalPages > 1 && (
+                <div className="pagination">
+                    <button 
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                    >
+                        Anterior
+                    </button>
+                    <span>Página {currentPage} de {totalPages}</span>
+                    <button 
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                    >
+                        Próxima
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

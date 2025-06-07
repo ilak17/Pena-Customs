@@ -2,133 +2,199 @@
     padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
+    background-color: #f8f9fa;
+    min-height: calc(100vh - 40px);
 }
 
-.users-container h2 {
+.users-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.users-header h2 {
     color: #1a1a1a;
-    margin-bottom: 20px;
-    font-size: 24px;
+    margin: 0;
+    font-size: 28px;
+    font-weight: 600;
 }
 
 .search-bar {
-    margin-bottom: 20px;
+    position: relative;
+    flex: 1;
+    max-width: 400px;
+}
+
+.search-bar .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
 }
 
 .search-bar input {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
+    padding: 12px 12px 12px 40px;
+    border: 2px solid #ddd;
     border-radius: 8px;
     font-size: 16px;
-    transition: border-color 0.3s ease;
+    transition: all 0.3s ease;
+    background-color: white;
 }
 
 .search-bar input:focus {
     outline: none;
     border-color: rgb(146, 40, 26);
+    box-shadow: 0 0 0 3px rgba(146, 40, 26, 0.1);
+}
+
+.users-table-container {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
 }
 
 .users-table {
     width: 100%;
     border-collapse: collapse;
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(146, 40, 26, 0.15);
-}
-
-.users-table th,
-.users-table td {
-    padding: 15px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
 }
 
 .users-table th {
     background-color: rgb(146, 40, 26);
     color: white;
     font-weight: 600;
+    padding: 16px;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.users-table th:hover {
+    background-color: rgb(126, 34, 22);
+}
+
+.users-table td {
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+}
+
+.users-table tr:last-child td {
+    border-bottom: none;
 }
 
 .users-table tr:hover {
     background-color: #f8f1f0;
 }
 
-.user-actions {
-    display: flex;
-    gap: 10px;
-}
-
-.user-actions button {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.edit-btn {
-    background-color: rgb(146, 40, 26);
-    color: white;
-}
-
-.edit-btn:hover {
-    background-color: rgb(126, 34, 22);
-}
-
-.delete-btn {
-    background-color: #666;
-    color: white;
-}
-
-.delete-btn:hover {
-    background-color: #555;
-}
-
-.user-form {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(146, 40, 26, 0.15);
-    margin-bottom: 30px;
-}
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    color: #666;
-    font-weight: 500;
-}
-
-.form-group input,
-.form-group select {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+.verified-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border-radius: 20px;
     font-size: 14px;
-    transition: border-color 0.3s ease;
 }
 
-.form-group input:focus,
-.form-group select:focus {
-    outline: none;
-    border-color: rgb(146, 40, 26);
+.verified-icon {
+    color: #2e7d32;
 }
 
-.form-buttons {
+.verify-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background-color: #fff3e0;
+    color: #e65100;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.verify-button:hover {
+    background-color: #ffe0b2;
+}
+
+.not-verified-icon {
+    color: #e65100;
+}
+
+.action-buttons {
     display: flex;
-    gap: 10px;
-    margin-top: 20px;
+    gap: 8px;
 }
 
-.form-buttons button {
+.action-buttons button {
+    padding: 8px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-button {
+    background-color: #fef2f2;
+    color: #dc2626;
+}
+
+.delete-button:hover {
+    background-color: #fee2e2;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    gap: 20px;
+}
+
+.loading-spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid rgb(146, 40, 26);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error-container {
+    text-align: center;
+    padding: 40px;
+    background-color: #fef2f2;
+    border-radius: 12px;
+    color: #dc2626;
+}
+
+.error-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.retry-button {
+    margin-top: 20px;
     padding: 12px 24px;
+    background-color: rgb(146, 40, 26);
+    color: white;
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -136,22 +202,8 @@
     transition: all 0.3s ease;
 }
 
-.form-buttons button[type="submit"] {
-    background-color: rgb(146, 40, 26);
-    color: white;
-}
-
-.form-buttons button[type="submit"]:hover {
+.retry-button:hover {
     background-color: rgb(126, 34, 22);
-}
-
-.form-buttons button[type="button"] {
-    background-color: #666;
-    color: white;
-}
-
-.form-buttons button[type="button"]:hover {
-    background-color: #555;
 }
 
 .pagination {
@@ -178,7 +230,7 @@
 }
 
 .pagination button:disabled {
-    background-color: #ccc;
+    background-color: #ddd;
     cursor: not-allowed;
 }
 
@@ -188,16 +240,30 @@
 }
 
 @media (max-width: 768px) {
-    .users-table {
-        display: block;
+    .users-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-bar {
+        max-width: none;
+    }
+
+    .users-table-container {
         overflow-x: auto;
     }
 
-    .form-buttons {
-        flex-direction: column;
+    .users-table {
+        min-width: 600px;
     }
 
-    .user-actions {
-        flex-direction: column;
+    .verified-badge,
+    .verify-button {
+        padding: 4px 8px;
+        font-size: 12px;
     }
-} 
+
+    .action-buttons button {
+        padding: 6px;
+    }
+}

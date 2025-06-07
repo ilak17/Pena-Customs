@@ -1,7 +1,43 @@
 const Reserve = require('../models/reserve');
 const Vehicle = require('../models/vehicle');
-const Client = require('../models/client');
-const Service = require('../models/service');
+const reserveUtil = require('../utils/reserveUtil');
+
+// Obtem todas as reservas
+exports.getAllReserves = async (req, res) => {
+    try{
+
+        // sortBy, orderBy, s são os parâmetros de pesquisa
+        const {s, sortBy = 'startTime', order = 'asc'} = req.query;
+        
+        let query = {};
+        if(s){
+            query = {
+                $or: [
+                    { sku: new RegExp(s, 'i') },
+                    { clientID: new RegExp(s, 'i') },
+                    { vehicleID: new RegExp(s, 'i') },
+                    { serviceID: new RegExp(s, 'i') },
+                    { status: new RegExp(s, 'i') }
+                ]
+            };
+        }
+
+        const sortOrder = order === 'desc' ? -1 : 1;
+
+        const reserves = await Reserve.find(query).sort({ [sortBy]: sortOrder })
+            .populate('clientID', 'name phone email -__t')
+            .populate('vehicleID', '-__v -clientID')
+            .populate('serviceID', '-status -__v')
+        ;
+        
+        if(!reserves) return res.status(404).json({sucess: false, message: "Reservas não encontradas"});
+
+        res.status(200).json({success: true, message: reserves});
+    }catch(err){
+        console.log(err);
+        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
+    }
+};
 
 // Obtem uma reserva por SKU
 exports.getReserveBySKU = async (req, res) => {
@@ -143,6 +179,54 @@ exports.createReserve = async (req, res) => {
         res.status(500).json({sucess: false, message: "Erro interno no servidor"});
     }
 }
+
+// Atualiza reserva
+exports.updateReserve = async (req, res) => {
+    try{
+        const sku = req.params.sku;
+        const {startTime, endTime, addComent, status} = req.body;
+
+        const reserve = await Reserve.findOne({ sku })
+            .populate({ path: 'clientID', select: 'name email' })
+            .populate('serviceID');        
+            
+        if(!reserve) return res.status(404).json({sucess:false, message: "Reserva não encontrado"}); 
+
+        const serviceSKUs = reserve.serviceID.map(service => service.sku); // Obtem os SKUs dos serviços da reserva
+        
+        if (startTime) {
+            const {startTime: newStartTime, endTime: newEndTime } = await reserveUtil.calculateReserveData(serviceSKUs, startTime); // Obtem os serviços e calcula o tempo de reserva
+            reserve.startTime = newStartTime;
+            reserve.endTime = newEndTime;
+        }
+
+        if(endTime) reserve.endTime = new Date(endTime);
+
+        if(addComent) reserve.addComents = addComent;
+
+        if(status && status != "pending"){ //Envia email de atualizaçao do estado da reserva
+            reserve.status = status;
+            await reserveUtil.sendStatusEmail({
+                reserveStatus: reserve.status, 
+                reserveSKU: reserve.sku,
+                reserveEndTime: reserve.endTime,
+                clientName: reserve.clientID.name,
+                clientEmail: reserve.clientID.email
+            });
+        } 
+
+        await reserve.save();
+
+        res.status(200).json({sucess: true, message: "Reserva atualizada com sucesso", reserve: reserve});
+
+    }catch(err){
+        console.log(err);
+        if (err instanceof Error && err.message) {
+            return res.status(400).json({ success: false, message: err.message });
+        }
+        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
+    }
+};
 
 // Apaga a reserva
 exports.deleteReserve = async (req, res) => {
