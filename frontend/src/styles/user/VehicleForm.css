@@ -1,8 +1,15 @@
 .vehicle-form-container {
     max-width: 800px;
     margin: 2rem auto;
-    padding: 0 1.5rem;
+    padding: 2.5rem 1.5rem;
     position: relative;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #111111 0%, #1a1a1a 50%, #111111 100%);
+    display: flex;
+    flex-direction: column;
+    padding-top: 100px;
+    width: 100%;
+    overflow: hidden;
 }
 
 .vehicle-form-container::before {
@@ -19,12 +26,8 @@
 }
 
 @keyframes rotate {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 .vehicle-form-header {
@@ -36,6 +39,8 @@
     box-shadow: 0 8px 32px rgba(146, 40, 26, 0.2);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    z-index: 2;
 }
 
 .vehicle-form-header h1 {
@@ -46,6 +51,7 @@
     display: inline-block;
     text-transform: uppercase;
     letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .vehicle-form-header h1::after {
@@ -55,7 +61,7 @@
     left: 0;
     width: 100%;
     height: 3px;
-    background: rgb(146, 40, 26);
+    background: linear-gradient(90deg, #e74c3c, #c0392b);
     border-radius: 2px;
 }
 
@@ -66,6 +72,7 @@
     box-shadow: 0 8px 32px rgba(146, 40, 26, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.1);
     animation: slideUp 0.5s ease forwards;
+    backdrop-filter: blur(10px);
     position: relative;
     z-index: 2;
 }
@@ -134,13 +141,14 @@
 
 .form-group input:hover {
     background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
 }
 
 .form-group input:focus {
     outline: none;
-    border-color: rgb(146, 40, 26);
-    box-shadow: 0 0 0 3px rgba(146, 40, 26, 0.2);
-    background: rgba(255, 255, 255, 0.1);
+    border-color: #e74c3c;
+    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.2);
+    background: rgba(255, 255, 255, 0.15);
 }
 
 .form-group input[type="file"] {
@@ -232,71 +240,42 @@
 }
 
 .submit-btn {
-    background: linear-gradient(45deg, #a82b1e, #d14444);
+    background: linear-gradient(45deg, #e74c3c, #c0392b);
     color: white;
+    box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);
 }
 
 .submit-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    box-shadow: 0 12px 30px rgba(231, 76, 60, 0.4);
+    background: linear-gradient(45deg, #c0392b, #e74c3c);
 }
 
 .cancel-btn {
-    background-color: #666;
-    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .cancel-btn:hover {
-    background-color: #555;
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
 .error-message {
     background: rgba(220, 53, 69, 0.1);
-    color: #ff6b6b;
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    margin-bottom: 1.5rem;
+    color: #ffffff;
     border: 1px solid rgba(220, 53, 69, 0.3);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    animation: shake 0.5s ease;
-}
-
-.error-message::before {
-    content: '⚠️';
-    font-size: 1.2rem;
-}
-
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
+    backdrop-filter: blur(10px);
 }
 
 .success-message {
     background: rgba(46, 213, 115, 0.1);
-    color: #2ed573;
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    margin-bottom: 1.5rem;
+    color: #ffffff;
     border: 1px solid rgba(46, 213, 115, 0.3);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    animation: slideIn 0.5s ease;
-}
-
-.success-message::before {
-    content: '✅';
-    font-size: 1.2rem;
-}
-
-@keyframes slideIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+    backdrop-filter: blur(10px);
 }
 
 /* Responsividade */
@@ -364,16 +343,17 @@
     to { opacity: 1; }
 }
 
-.modal-content {
+.vehicle-modal-content {
     background: rgba(29, 29, 29, 0.95);
     padding: 2.5rem;
     border-radius: 20px;
     width: 90%;
     max-width: 600px;
     position: relative;
-    box-shadow: 0 8px 32px rgba(146, 40, 26, 0.2);
+    box-shadow: 0 8px 32px rgba(231, 76, 60, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.1);
     animation: slideIn 0.3s ease;
+    backdrop-filter: blur(10px);
 }
 
 @keyframes slideIn {
@@ -405,7 +385,7 @@
     transform: scale(1.1);
 }
 
-.modal-content h2 {
+.vehicle-modal-content h2 {
     color: #ffffff;
     font-size: 1.8rem;
     margin: 0 0 2rem 0;
@@ -415,7 +395,7 @@
     position: relative;
 }
 
-.modal-content h2::after {
+.vehicle-modal-content h2::after {
     content: '';
     position: absolute;
     bottom: -0.5rem;
@@ -423,31 +403,70 @@
     transform: translateX(-50%);
     width: 60px;
     height: 3px;
-    background: rgb(146, 40, 26);
+    background: linear-gradient(90deg, #e74c3c, #c0392b);
     border-radius: 2px;
 }
 
-.disabled-input {
-    background: rgba(255, 255, 255, 0.05) !important;
-    color: rgba(255, 255, 255, 0.5) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    cursor: not-allowed;
-}
-
 /* Ajuste para o formulário dentro do modal */
-.modal-content .vehicle-form {
+.vehicle-modal-content .vehicle-form {
     background: transparent;
     padding: 0;
     box-shadow: none;
     border: none;
 }
 
-.modal-content .form-group {
+.vehicle-modal-content .form-group {
     margin-bottom: 1.5rem;
 }
 
-.modal-content .form-actions {
+.vehicle-modal-content .form-actions {
     margin-top: 2rem;
     padding-top: 1.5rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
-} 
+}
+
+.vehicle-modal-content .form-group input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+}
+
+.vehicle-modal-content .form-group input:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.vehicle-modal-content .form-group input:focus {
+    outline: none;
+    border-color: #e74c3c;
+    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.2);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.vehicle-modal-content .form-group label {
+    display: block;
+    margin-bottom: 0.75rem;
+    color: #ffffffa9;
+    font-weight: 500;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Ajuste para o placeholder */
+.vehicle-modal-content .form-group input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Ajuste específico para o input desabilitado no modal */
+.vehicle-modal-content .disabled-input {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    cursor: not-allowed;
+}

@@ -242,7 +242,7 @@ const MyVehicles = () => {
             {/* Modal de Edição */}
             {editingVehicle && (
                 <div className="modal-overlay">
-                    <div className="modal-content">
+                    <div className="vehicle-modal-content">
                         <button 
                             className="modal-close" 
                             onClick={() => setEditingVehicle(null)}
@@ -303,7 +303,7 @@ const MyVehicles = () => {
             {/* Modal de Adição */}
             {isAddingVehicle && (
                 <div className="modal-overlay">
-                    <div className="modal-content">
+                    <div className="vehicle-modal-content">
                         <button 
                             className="modal-close" 
                             onClick={() => setIsAddingVehicle(false)}
