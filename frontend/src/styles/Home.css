@@ -104,8 +104,8 @@ main {
 
 .services-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 2.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
@@ -120,6 +120,9 @@ main {
   position: relative;
   display: flex;
   flex-direction: column;
+  height: 100%;
+  max-width: 300px;
+  margin: 0 auto;
 }
 
 .service-card:hover {
@@ -129,7 +132,7 @@ main {
 
 .service-image {
   width: 100%;
-  height: 290px;
+  height: 250px;
   margin-bottom: 0;
   overflow: hidden;
   position: relative;
@@ -149,7 +152,7 @@ main {
 }
 
 .service-content {
-  padding: 1.5rem;
+  padding: 1.25rem;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -157,7 +160,7 @@ main {
 }
 
 .service-card h3 {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   color: #1a1a1a;
   margin-bottom: 0.75rem;
   font-weight: 600;
@@ -165,14 +168,14 @@ main {
 
 .service-card p {
   color: #666;
-  line-height: 1.6;
-  margin-bottom: 1.25rem;
-  flex: 1;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
 }
 
 .service-button {
   display: inline-block;
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem 1.25rem;
   background-color: rgb(146, 40, 26);
   color: white;
   text-decoration: none;
@@ -183,6 +186,8 @@ main {
   border: none;
   cursor: pointer;
   align-self: flex-start;
+  font-size: 0.9rem;
+  margin-top: auto;
 }
 
 .service-button:hover {
@@ -414,7 +419,20 @@ main {
   }
 
   .services-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .service-card {
+    max-width: 280px;
+  }
+
+  .service-image {
+    height: 220px;
+  }
+
+  .service-content {
+    padding: 1rem;
   }
 
   .cta-section {
