@@ -44,7 +44,8 @@
   overflow: hidden;
 }
 
-.page-container::before {
+/* Removendo o estilo global e criando uma classe específica para a home */
+.home-page-container::before {
   content: '';
   position: absolute;
   width: 200%;
@@ -53,7 +54,8 @@
   animation: rotate 30s linear infinite;
   top: -50%;
   left: -50%;
-  z-index: 1;
+  z-index: -1; /* Alterado para ficar atrás do conteúdo */
+  pointer-events: none; /* Garante que o elemento não interfira com cliques */
 }
 
 .content-wrapper {

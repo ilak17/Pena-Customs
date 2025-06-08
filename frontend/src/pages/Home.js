@@ -47,7 +47,7 @@ function Home() {
   };
 
   return (
-    <div className="page-container">
+    <div className="page-container home-page-container">
       <Header />
       <div className="content-wrapper">
         <main>

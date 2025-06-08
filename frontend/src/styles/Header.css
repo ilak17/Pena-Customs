@@ -82,11 +82,11 @@
   align-items: center;
 }
 
-.profile-container {
+.header .profile-container {
   position: relative;
 }
 
-.profile-button {
+.header .profile-button {
   background: linear-gradient(45deg, #a82b1e, #d14444);
   border: none;
   border-radius: 25px;

@@ -93,7 +93,7 @@
 }
 
 /* Main Content Styles */
-.main-content {
+.dashboard-container .main-content {
     flex-grow: 1;
     padding: 2rem;
     background-color: #f8f1f0;

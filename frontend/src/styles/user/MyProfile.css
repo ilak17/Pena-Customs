@@ -1,44 +1,78 @@
 .profile-section {
-  padding: 2rem;
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(146, 40, 26, 0.15);
+  padding: 2.5rem;
+  background: rgba(29, 29, 29, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(146, 40, 26, 0.2);
   margin: 2rem auto;
   max-width: 800px;
+  width: 100%;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-section::before {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at center, rgba(168, 43, 30, 0.1) 0%, transparent 50%);
+  animation: rotate 30s linear infinite;
+  top: -50%;
+  left: -50%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.user-profile-container {
+  padding-top: 100px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #111111 0%, #1a1a1a 50%, #111111 100%);
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 100px 2rem 2rem 2rem;
+  position: relative;
+  overflow: hidden;
 }
 
 .section-header {
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
   border-bottom: 3px solid rgb(146, 40, 26);
-  padding-bottom: 0.75rem;
+  padding-bottom: 1rem;
   position: relative;
-}
-
-.section-header::after {
-  content: '';
-  position: absolute;
-  bottom: -3px;
-  left: 0;
-  width: 80px;
-  height: 3px;
-  background-color: rgb(126, 34, 22);
+  z-index: 2;
 }
 
 .section-header h2 {
-  color: rgb(146, 40, 26);
-  font-size: 1.8rem;
+  color: #ffffff;
+  font-size: 2rem;
   margin: 0;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
+  text-align: center;
 }
 
 .profile-content {
   max-width: 500px;
   margin: 0 auto;
-  background-color: #f8f1f0;
-  padding: 1.5rem;
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2rem;
+  border-radius: 15px;
+  position: relative;
+  z-index: 2;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .profile-form {
@@ -52,7 +86,8 @@
   flex-direction: column;
   gap: 0.75rem;
   position: relative;
-  padding-bottom: 0.5rem;
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-group::after {
@@ -62,23 +97,34 @@
   left: 0;
   width: 100%;
   height: 1px;
-  background: linear-gradient(to right, rgb(146, 40, 26), rgb(126, 34, 22));
-  opacity: 0.2;
+  background: linear-gradient(to right, rgba(146, 40, 26, 0.5), transparent);
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.form-group:last-child::after {
+  display: none;
 }
 
 .form-group label {
-  font-weight: 600;
-  color: rgb(146, 40, 26);
-  font-size: 1.1rem;
+  font-weight: 500;
+  color: #ffffffa9 !important;
+  font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .form-value {
-  padding: 0.75rem 0;
-  color: #1a1a1a;
+  padding: 0.75rem 1rem;
+  color: #ffffff;
   margin: 0;
   font-size: 1.1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .form-input {
@@ -100,30 +146,50 @@
 .action-buttons {
   display: flex;
   gap: 1rem;
-  margin-top: 2.5rem;
-  justify-content: flex-start;
+  margin-top: 0.5rem;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
 }
 
 .btn {
   padding: 0.75rem 2rem;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
-  border-radius: 8px;
+  border-radius: 30px;
   transition: all 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+  border: none;
+  cursor: pointer;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(-100%) skewX(-15deg);
+  transition: transform 0.6s ease;
+}
+
+.btn:hover::before {
+  transform: translateX(100%) skewX(-15deg);
 }
 
 .btn-primary {
-  background-color: rgb(146, 40, 26);
+  background: linear-gradient(45deg, #a82b1e, #d14444);
   color: white;
-  border: none;
 }
 
 .btn-primary:hover {
-  background-color: rgb(126, 34, 22);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(146, 40, 26, 0.2);
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
 }
 
 .btn-secondary {
@@ -136,6 +202,16 @@
   background-color: #555;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn-danger {
+  background: linear-gradient(45deg, #dc3545, #ff4757);
+  color: white;
+}
+
+.btn-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
 }
 
 .loading {
@@ -151,22 +227,12 @@
 }
 
 .delete-account-section {
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(146, 40, 26, 0.2);
+  margin-top: 0.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   text-align: center;
-}
-
-.btn-danger {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-}
-
-.btn-danger:hover {
-  background-color: #c82333;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+  position: relative;
+  z-index: 2;
 }
 
 .modal-overlay {
@@ -175,7 +241,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -183,26 +250,29 @@
 }
 
 .modal-content {
-  background-color: white;
-  padding: 2rem;
-  border-radius: 12px;
+  background: rgba(29, 29, 29, 0.95);
+  padding: 2.5rem;
+  border-radius: 20px;
   max-width: 400px;
   width: 90%;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 32px rgba(146, 40, 26, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
 }
 
 .modal-content h3 {
-  color: rgb(146, 40, 26);
+  color: #ffffff;
   font-size: 1.5rem;
   margin-bottom: 1rem;
   text-align: center;
 }
 
 .modal-content p {
-  color: #666;
+  color: rgba(255, 255, 255, 0.8);
   margin-bottom: 1.5rem;
   text-align: center;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .modal-buttons {
@@ -212,6 +282,10 @@
 }
 
 @media (max-width: 480px) {
+  .profile-section {
+    padding: 1.5rem;
+  }
+
   .modal-content {
     width: 95%;
     padding: 1.5rem;
@@ -222,6 +296,14 @@
   }
 
   .modal-buttons .btn {
+    width: 100%;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-buttons .btn {
     width: 100%;
   }
 } 
