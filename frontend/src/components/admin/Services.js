@@ -232,7 +232,7 @@ const Services = () => {
                 showNotification(data.message, 'error');
             }
         } catch (err) {
-            const errorMsg = 'Erro ao salvar serviço';
+            const errorMsg = 'Erro ao guardar serviço';
             setError(errorMsg);
             showNotification(errorMsg, 'error');
         }
@@ -369,7 +369,7 @@ const Services = () => {
                                 Categorias
                                 <FaInfoCircle 
                                     className="info-icon" 
-                                    title="Digite para adicionar múltiplas categorias"
+                                    title="Adicione ou remova categorias"
                                 />
                             </label>
                             <div className="category-input-container">
@@ -391,7 +391,7 @@ const Services = () => {
                                     id="category"
                                     type="text"
                                     name="category"
-                                    placeholder="Digite para adicionar uma categoria"
+                                    placeholder="Ex: Mecânica Geral"
                                     value={formData.categoryInput || ''}
                                     onChange={handleCategoryChange}
                                     onFocus={handleCategoryFocus}

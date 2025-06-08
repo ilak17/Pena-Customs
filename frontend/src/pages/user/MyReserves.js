@@ -124,7 +124,7 @@ function MyReserves() {
       <div className="my-reserves-page">
         <Header />
         <div className="my-reserves-hero">
-          <h1>Carregando reservas...</h1>
+          <h1>Carregando as reservas...</h1>
         </div>
       </div>
     );
@@ -148,14 +148,14 @@ function MyReserves() {
       
       <section className="my-reserves-hero">
         <h1>Minhas Reservas</h1>
-        <p>Acompanhe todas as suas reservas e o status de cada uma delas.</p>
+        <p>Acompanhe todas as suas reservas e o estado de cada uma delas.</p>
       </section>
 
       <div className="my-reserves-filters">
         <input
           type="text"
           name="s"
-          placeholder="Pesquisar por matrícula, SKU ou status..."
+          placeholder="Pesquisar por matrícula, SKU ou estado..."
           value={filters.s}
           onChange={handleFilterChange}
         />
@@ -163,7 +163,7 @@ function MyReserves() {
         <select name="sortBy" value={filters.sortBy} onChange={handleFilterChange}>
           <option value="startTime">Data de Início</option>
           <option value="endTime">Data de Fim</option>
-          <option value="status">Status</option>
+          <option value="status">Estado</option>
           <option value="sku">SKU</option>
         </select>
 

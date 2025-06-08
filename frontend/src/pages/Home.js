@@ -53,8 +53,8 @@ function Home() {
         <main>
           <section className="hero-section">
             <div className="hero-content">
-              <h1>Bem-vindo à Pena-Customs</h1>
-              <p>Transformamos o seu sonho automóvel em realidade com tecnologia de ponta e expertise incomparável</p>
+              <h1>Bem-vindo à Pena Customs</h1>
+              <p>Transformamos o seu automóvel de sonho em realidade com tecnologia de ponta e qualidade incomparável</p>
               {isLoggedIn ? (
                 <button onClick={() => navigate('/marcar-reserva')} className="cta-button">
                   <span>Agendar Reserva</span>
@@ -107,7 +107,7 @@ function Home() {
                 </div>
                 <div className="service-content">
                   <h3>Interior Personalizado</h3>
-                  <p>Requinte e conforto em cada pormenor do habitáculo</p>
+                  <p>Requinte e conforto em cada pormenor do veículo</p>
                   <button onClick={() => navigateToServices('Personalização')} className="service-button">
                     <span>Saber Mais</span>
                     <i className="fas fa-chevron-right"></i>
@@ -157,7 +157,7 @@ function Home() {
               <p><i className="fas fa-envelope"></i> geral@pena-customs.pt</p>
               <p><i className="fas fa-phone"></i> (+351) 123 456 789</p>
               <p><i className="fas fa-map-marker-alt"></i> Rua Principal, 123</p>
-              <p>2750-000 Cascais</p>
+              <p>4560-000 Penafiel</p>
             </div>
             <div className="footer-section">
               <h3>Horário de Funcionamento</h3>
@@ -181,7 +181,7 @@ function Home() {
             </div>
           </div>
           <div className="footer-bottom">
-            <p>&copy; 2024 Pena-Customs. Todos os direitos reservados.</p>
+            <p>&copy; 2025 Pena-Customs. Todos os direitos reservados.</p>
           </div>
         </footer>
       </div>

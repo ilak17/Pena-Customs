@@ -130,7 +130,7 @@ function Services() {
       <div className="services-page">
         <Header />
         <div className="services-hero">
-          <h1>Carregando serviços...</h1>
+          <h1>Carregando os serviços...</h1>
         </div>
       </div>
     );
@@ -153,8 +153,8 @@ function Services() {
       <Header />
       
       <section className="services-hero">
-        <h1>Nossos Serviços</h1>
-        <p>Descubra nossa gama completa de serviços de personalização automóvel, onde cada detalhe é cuidadosamente pensado para superar suas expectativas.</p>
+        <h1>Os Nossos Serviços</h1>
+        <p>Descubra a nossa gama completa de serviços de personalização automóvel, onde cada detalhe é cuidadosamente pensado para superar as suas expectativas.</p>
       </section>
 
       <div className="services-filters">
@@ -182,7 +182,7 @@ function Services() {
         </select>
 
         <select name="status" value={filters.status} onChange={handleFilterChange}>
-          <option value="">Todos os Status</option>
+          <option value="">Todos os Estados</option>
           <option value="available">Disponível</option>
           <option value="unavailable">Indisponível</option>
         </select>

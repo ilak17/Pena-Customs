@@ -134,7 +134,7 @@ function CreateReserve() {
   };
 
   return (
-    <div className="page-container">
+    <div className="create-reserve-page">
       <Header />
       <div className="create-reserve-container">
         <div className="create-reserve-content">
