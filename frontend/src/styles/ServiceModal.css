@@ -135,6 +135,35 @@
   box-shadow: 0 4px 12px rgba(146, 40, 26, 0.2);
 }
 
+.modal-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.modal-categories .category-tag {
+  background-color: rgb(146, 40, 26, 0.1);
+  color: rgb(146, 40, 26);
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.schedule-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.schedule-button:disabled:hover {
+  background-color: #cccccc;
+  transform: none;
+  box-shadow: none;
+}
+
 @media (max-width: 768px) {
   .service-modal-content {
     margin: 10px;

@@ -46,7 +46,7 @@ const Services = () => {
     const [editingId, setEditingId] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(8);
+    const [itemsPerPage] = useState(9);
     const [timeError, setTimeError] = useState('');
     const [showCategoryList, setShowCategoryList] = useState(false);
     const [filteredCategories, setFilteredCategories] = useState(AVAILABLE_CATEGORIES);

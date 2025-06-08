@@ -28,8 +28,23 @@ function ServiceModal({ service, onClose, onSchedule }) {
 
         <div className="modal-info">
           <h2>{service.name}</h2>
-          <p className="service-description">{service.description}</p>
           
+          <div className="modal-categories">
+            {Array.isArray(service.category) ? (
+              service.category.map((cat, index) => (
+                <span key={index} className="category-tag">
+                  {cat}
+                </span>
+              ))
+            ) : (
+              <span className="category-tag">{service.category}</span>
+            )}
+          </div>
+
+          <div className="service-description">
+            <p>{service.description}</p>
+          </div>
+
           <div className="service-modal-details">
             <div className="modal-detail-item">
               <i className="fas fa-tag"></i>
@@ -44,21 +59,19 @@ function ServiceModal({ service, onClose, onSchedule }) {
               <span>Preço: {formatPrice(service.price)}</span>
             </div>
             <div className="modal-detail-item">
-              <i className="fas fa-folder"></i>
-              <span>Categoria: {service.category}</span>
-            </div>
-            <div className="modal-detail-item">
               <i className="fas fa-info-circle"></i>
               <span>Status: {service.status === 'available' ? 'Disponível' : 'Indisponível'}</span>
             </div>
           </div>
 
           <div className="modal-actions">
-            {service.status === 'available' && (
-              <button onClick={onSchedule} className="schedule-button">
-                Agendar Serviço
-              </button>
-            )}
+            <button 
+              className="schedule-button" 
+              onClick={onSchedule}
+              disabled={service.status === 'unavailable'}
+            >
+              {service.status === 'available' ? 'Agendar Serviço' : 'Serviço Indisponível'}
+            </button>
           </div>
         </div>
       </div>

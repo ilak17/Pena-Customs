@@ -31,7 +31,6 @@ function Services() {
   const [selectedService, setSelectedService] = useState(null);
 
   useEffect(() => {
-
     const fetchServices = async () => {
       try {
         const queryParams = new URLSearchParams({
@@ -54,7 +53,10 @@ function Services() {
         const data = await response.json();
         if (data.success) {
           setServices(data.message);
-          setPagination(data.pagination);
+          setPagination(prev => ({
+            ...prev,
+            ...data.pagination
+          }));
           setSearchParams(queryParams);
         } else {
           throw new Error(data.message || 'Erro ao carregar serviços');
@@ -67,8 +69,7 @@ function Services() {
     };
 
     fetchServices();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, setSearchParams]);
+  }, [filters, pagination.currentPage, pagination.itemsPerPage, setSearchParams]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -229,6 +230,17 @@ function Services() {
             <div className="service-item-content">
               <h2>{service.name}</h2>
               <p>SKU: {service.sku}</p>
+              <div className="service-categories">
+                {Array.isArray(service.category) ? (
+                  service.category.map((cat, index) => (
+                    <span key={index} className="category-tag">
+                      {cat}
+                    </span>
+                  ))
+                ) : (
+                  <span className="category-tag">{service.category}</span>
+                )}
+              </div>
               <div className="service-details">
                 <div className="service-info">
                   <i className="fas fa-clock"></i>
@@ -246,8 +258,9 @@ function Services() {
               <button 
                 onClick={() => handleServiceClick(service.sku)} 
                 className="service-item-button"
+                disabled={service.status === 'unavailable'}
               >
-                Saber Mais
+                {service.status === 'available' ? 'Saber Mais' : 'Indisponível'}
               </button>
             </div>
           </div>
