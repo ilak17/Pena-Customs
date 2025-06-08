@@ -2,90 +2,129 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    padding-top: 80px;
+    padding-top: 100px;
     background: linear-gradient(135deg, #111111 0%, #1a1a1a 50%, #111111 100%);
-    color: #ffffff;
-    position: relative;
-    overflow: hidden;
 }
 
 .my-vehicles-container {
     max-width: 1200px;
     margin: 2rem auto;
     padding: 2rem;
-    background: transparent;
+    width: 100%;
     position: relative;
+}
+
+.vehicles-section {
+    padding: 2.5rem;
+    background: rgba(29, 29, 29, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(146, 40, 26, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.vehicles-section::before {
+    content: '';
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, rgba(168, 43, 30, 0.1) 0%, transparent 50%);
+    animation: rotate 30s linear infinite;
+    top: -50%;
+    left: -50%;
     z-index: 1;
+    pointer-events: none;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .my-vehicles-header {
+    margin-bottom: 2.5rem;
+    border-bottom: 3px solid rgb(146, 40, 26);
+    padding-bottom: 1rem;
+    position: relative;
+    z-index: 2;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
-    padding: 2rem;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .my-vehicles-header h1 {
-    font-size: 2.2rem;
     color: #ffffff;
+    font-size: 2rem;
     margin: 0;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .add-vehicle-btn {
-    padding: 1rem 2rem;
-    background: linear-gradient(45deg, #e74c3c, #c0392b);
+    padding: 0.75rem 2rem;
+    background: linear-gradient(45deg, #a82b1e, #d14444);
     color: white;
     text-decoration: none;
-    border-radius: 50px;
+    border-radius: 30px;
     font-weight: 600;
     transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-    box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     position: relative;
     overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.add-vehicle-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(-100%) skewX(-15deg);
+    transition: transform 0.6s ease;
+}
+
+.add-vehicle-btn:hover::before {
+    transform: translateX(100%) skewX(-15deg);
 }
 
 .add-vehicle-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(231, 76, 60, 0.3);
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
 }
 
 .vehicles-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 2rem;
-    margin-top: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    position: relative;
+    z-index: 2;
 }
 
 .vehicle-card {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    transition: all 0.4s ease;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    position: relative;
-    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
 }
 
 .vehicle-card:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 12px 40px rgba(231, 76, 60, 0.2);
-    border-color: rgba(231, 76, 60, 0.3);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .vehicle-image {
@@ -107,96 +146,78 @@
 }
 
 .no-image {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.9rem;
     display: flex;
     align-items: center;
     justify-content: center;
     height: 100%;
     flex-direction: column;
-    gap: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    gap: 0.5rem;
 }
 
 .no-image::before {
     content: '🖼️';
-    font-size: 2.5rem;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    font-size: 2rem;
 }
 
 .vehicle-info {
-    padding: 1.75rem;
-    position: relative;
-    z-index: 1;
+    padding: 1.5rem;
 }
 
 .vehicle-info h3 {
-    font-size: 1.3rem;
+    font-size: 1.25rem;
     color: #ffffff;
-    margin: 0 0 0.75rem 0;
+    margin: 0 0 0.5rem 0;
     font-weight: 600;
-    letter-spacing: 0.5px;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .vehicle-info p {
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 0.7);
     margin: 0;
-    font-size: 1rem;
-    letter-spacing: 0.5px;
+    font-size: 0.95rem;
 }
 
 .vehicle-actions {
-    padding: 1.5rem;
+    padding: 1rem 1.5rem;
     display: flex;
     gap: 1rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.2);
 }
 
 .edit-btn, .delete-btn {
     flex: 1;
-    padding: 0.875rem;
-    border-radius: 50px;
-    font-weight: 600;
+    padding: 0.75rem;
+    border-radius: 12px;
+    font-weight: 500;
     text-align: center;
     transition: all 0.3s ease;
     font-size: 0.9rem;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    position: relative;
-    overflow: hidden;
+    letter-spacing: 0.5px;
 }
 
 .edit-btn {
-    background: rgba(231, 76, 60, 0.1);
-    color: #ffffff;
-    border: 1px solid rgba(231, 76, 60, 0.5);
-}
-
-.edit-btn:hover {
-    background: linear-gradient(45deg, #e74c3c, #c0392b);
-    color: white;
-    border-color: transparent;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
-}
-
-.delete-btn {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
     color: #ffffff;
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+.edit-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.delete-btn {
+    background: rgba(220, 53, 69, 0.1);
+    color: #ff6b6b;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
 .delete-btn:hover {
-    background: #c0392b;
-    color: white;
-    border-color: transparent;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(192, 57, 43, 0.3);
+    background: rgba(220, 53, 69, 0.2);
+    border-color: rgba(220, 53, 69, 0.4);
 }
 
 .loading {
@@ -205,39 +226,33 @@
     align-items: center;
     min-height: 200px;
     font-size: 1.1rem;
-    color: #7f8c8d;
-    animation: loadingPulse 1.5s ease-in-out infinite;
+    color: rgba(255, 255, 255, 0.7);
 }
 
 .error {
-    background: rgba(220, 38, 38, 0.1);
-    border: 1px solid rgba(220, 38, 38, 0.3);
-    border-radius: 15px;
-    padding: 1.25rem 1.75rem;
-    color: #ffffff;
+    background: rgba(220, 53, 69, 0.1);
+    border: 1px solid rgba(220, 53, 69, 0.3);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    color: #ff6b6b;
     margin: 1rem 0;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    backdrop-filter: blur(10px);
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    gap: 0.5rem;
 }
 
 .no-vehicles {
     text-align: center;
-    padding: 4rem 2rem;
+    padding: 3rem 2rem;
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 1.2rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    letter-spacing: 0.5px;
+    gap: 1rem;
 }
 
 .no-vehicles::before {
@@ -251,11 +266,19 @@
         padding: 1rem;
     }
 
+    .vehicles-section {
+        padding: 1.5rem;
+    }
+
     .my-vehicles-header {
         flex-direction: column;
         gap: 1rem;
         text-align: center;
-        padding: 1.5rem;
+        padding-bottom: 1.5rem;
+    }
+
+    .my-vehicles-header h1 {
+        font-size: 1.75rem;
     }
 
     .add-vehicle-btn {
@@ -266,27 +289,16 @@
     .vehicles-grid {
         grid-template-columns: 1fr;
     }
-
-    .vehicle-card {
-        max-width: 100%;
-    }
 }
 
-@media (min-width: 768px) and (max-width: 1024px) {
-    .vehicles-grid {
-        grid-template-columns: repeat(2, 1fr);
+@media (prefers-reduced-motion: reduce) {
+    .vehicles-section::before {
+        animation: none;
     }
-
-    .my-vehicles-container {
-        padding: 1.5rem;
-    }
-
-    .my-vehicles-header {
-        padding: 1.75rem;
-    }
-
-    .my-vehicles-header h1 {
-        font-size: 2rem;
+    
+    .add-vehicle-btn::before,
+    .add-vehicle-btn:hover {
+        transition: none;
     }
 }
 
@@ -310,109 +322,3 @@
 .vehicle-card:nth-child(3) { animation-delay: 0.2s; }
 .vehicle-card:nth-child(4) { animation-delay: 0.3s; }
 .vehicle-card:nth-child(5) { animation-delay: 0.4s; }
-
-.edit-btn:focus-visible,
-.delete-btn:focus-visible,
-.add-vehicle-btn:focus-visible {
-    outline: 3px solid #e74c3c;
-    outline-offset: 2px;
-}
-
-/* Loading state animation */
-@keyframes loadingPulse {
-    0% { opacity: 0.6; }
-    50% { opacity: 1; }
-    100% { opacity: 0.6; }
-}
-
-.loading {
-    animation: loadingPulse 1.5s ease-in-out infinite;
-}
-
-/* Loading state skeleton animation */
-@keyframes shimmer {
-    0% {
-        background-position: -1000px 0;
-    }
-    100% {
-        background-position: 1000px 0;
-    }
-}
-
-.vehicle-card.loading {
-    animation: none;
-}
-
-.vehicle-card.loading .vehicle-image,
-.vehicle-card.loading .vehicle-info h3,
-.vehicle-card.loading .vehicle-info p {
-    background: linear-gradient(90deg, 
-        rgba(255, 255, 255, 0.05) 25%, 
-        rgba(255, 255, 255, 0.1) 50%, 
-        rgba(255, 255, 255, 0.05) 75%);
-    background-size: 1000px 100%;
-    animation: shimmer 2s infinite linear;
-    border-radius: 8px;
-}
-
-.vehicle-card.loading .vehicle-info h3 {
-    height: 24px;
-    width: 80%;
-    margin-bottom: 1rem;
-}
-
-.vehicle-card.loading .vehicle-info p {
-    height: 16px;
-    width: 60%;
-    margin-bottom: 0.5rem;
-}
-
-/* Smooth transitions for state changes */
-.vehicle-card {
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.edit-btn,
-.delete-btn,
-.add-vehicle-btn {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Error state animation */
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
-    20%, 40%, 60%, 80% { transform: translateX(2px); }
-}
-
-.error {
-    animation: shake 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-}
-
-/* Respect user's motion preferences */
-@media (prefers-reduced-motion: reduce) {
-    .vehicle-card {
-        animation: none;
-    }
-    
-    .edit-btn:hover,
-    .delete-btn:hover,
-    .add-vehicle-btn:hover {
-        transform: none;
-    }
-    
-    .vehicle-card:hover {
-        transform: none;
-    }
-    
-    .vehicle-image img:hover {
-        transform: none;
-    }
-    
-    .loading {
-        animation: none;
-    }
-}
