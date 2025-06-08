@@ -528,3 +528,36 @@
 .action-icon {
     margin-right: 4px;
 }
+
+.selected-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.category-tag {
+    display: flex;
+    align-items: center;
+    background-color: #e9ecef;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.remove-category {
+    background: none;
+    border: none;
+    color: #dc3545;
+    margin-left: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.remove-category:hover {
+    color: #c82333;
+}

@@ -35,7 +35,7 @@ const Services = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [formData, setFormData] = useState({
-        category: '',
+        category: [],
         name: '',
         price: '',
         description: '',
@@ -50,6 +50,10 @@ const Services = () => {
     const [timeError, setTimeError] = useState('');
     const [showCategoryList, setShowCategoryList] = useState(false);
     const [filteredCategories, setFilteredCategories] = useState(AVAILABLE_CATEGORIES);
+    const [pagination, setPagination] = useState({
+        total: 0,
+        totalPages: 0
+    });
 
     // Regex para validação do tempo
     const timeRegex = /^(\d+d)?(?:-(\d+h))?(?:-(\d+m))?$|^(\d+h)?(?:-(\d+m))?$|^(\d+m)$/;
@@ -73,13 +77,20 @@ const Services = () => {
             const data = await response.json();
             
             if (data.success) {
-                console.log('Serviços recebidos:', data.message);
                 setServices(data.message || []);
+                // Atualizar a paginação local
+                const total = data.message.length;
+                setPagination(prev => ({
+                    ...prev,
+                    total,
+                    totalPages: Math.ceil(total / itemsPerPage)
+                }));
             } else {
                 setError(data.message);
             }
         } catch (err) {
             setError('Erro ao carregar serviços');
+            console.error('Erro ao carregar serviços:', err);
         } finally {
             setLoading(false);
         }
@@ -143,11 +154,20 @@ const Services = () => {
     };
 
     const handleCategorySelect = (category) => {
+        if (!formData.category.includes(category)) {
+            setFormData(prev => ({
+                ...prev,
+                category: [...prev.category, category]
+            }));
+        }
+        setShowCategoryList(false);
+    };
+
+    const handleRemoveCategory = (categoryToRemove) => {
         setFormData(prev => ({
             ...prev,
-            category
+            category: prev.category.filter(cat => cat !== categoryToRemove)
         }));
-        setShowCategoryList(false);
     };
 
     const handleCategoryBlur = () => {
@@ -166,10 +186,22 @@ const Services = () => {
             return;
         }
 
+        // Verificar se há pelo menos uma categoria
+        if (!formData.category || formData.category.length === 0) {
+            showNotification('Selecione pelo menos uma categoria', 'error');
+            return;
+        }
+
         const formDataToSend = new FormData();
         
+        // Adicionar cada categoria como um item separado no array
+        formData.category.forEach((cat, index) => {
+            formDataToSend.append(`category[${index}]`, cat);
+        });
+
+        // Adicionar os outros campos
         Object.keys(formData).forEach(key => {
-            if (formData[key] !== null) {
+            if (key !== 'category' && formData[key] !== null) {
                 formDataToSend.append(key, formData[key]);
             }
         });
@@ -237,7 +269,7 @@ const Services = () => {
     const handleEdit = (service) => {
         setEditingId(service._id);
         setFormData({
-            category: service.category,
+            category: Array.isArray(service.category) ? service.category : [service.category],
             name: service.name,
             price: service.price,
             description: service.description,
@@ -249,7 +281,7 @@ const Services = () => {
 
     const resetForm = () => {
         setFormData({
-            category: '',
+            category: [],
             name: '',
             price: '',
             description: '',
@@ -258,6 +290,7 @@ const Services = () => {
             image: null
         });
         setEditingId(null);
+        setTimeError('');
     };
 
     const showNotification = (message, type) => {
@@ -269,14 +302,21 @@ const Services = () => {
     const filteredServices = services.filter(service => {
         if (!service) return false;
         
-        const searchTermLower = searchTerm.toLowerCase();
-        const name = String(service.name || '');
-        const category = String(service.category || '');
-        const description = String(service.description || '');
+        const searchTermLower = searchTerm.toLowerCase().trim();
+        
+        // Se não houver termo de pesquisa, retorna todos os serviços
+        if (!searchTermLower) return true;
+        
+        // Verifica cada campo relevante
+        const nameMatch = service.name?.toLowerCase().includes(searchTermLower);
+        const skuMatch = service.sku?.toLowerCase().includes(searchTermLower);
+        const descriptionMatch = service.description?.toLowerCase().includes(searchTermLower);
+        const categoryMatches = Array.isArray(service.category) 
+            ? service.category.some(cat => cat.toLowerCase().includes(searchTermLower))
+            : service.category?.toLowerCase().includes(searchTermLower);
+        const priceMatch = service.price?.toString().includes(searchTermLower);
 
-        return name.toLowerCase().includes(searchTermLower) ||
-               category.toLowerCase().includes(searchTermLower) ||
-               description.toLowerCase().includes(searchTermLower);
+        return nameMatch || skuMatch || descriptionMatch || categoryMatches || priceMatch;
     });
 
     // Paginação
@@ -326,24 +366,37 @@ const Services = () => {
                         <div className="form-group">
                             <label htmlFor="category">
                                 <FaWrench className="input-icon" />
-                                Categoria
+                                Categorias
                                 <FaInfoCircle 
                                     className="info-icon" 
-                                    title="Digite para filtrar ou selecione uma categoria existente"
+                                    title="Digite para adicionar múltiplas categorias"
                                 />
                             </label>
                             <div className="category-input-container">
+                                <div className="selected-categories">
+                                    {formData.category.map((cat, index) => (
+                                        <div key={index} className="category-tag">
+                                            {cat}
+                                            <button 
+                                                type="button" 
+                                                onClick={() => handleRemoveCategory(cat)}
+                                                className="remove-category"
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
                                 <input
                                     id="category"
                                     type="text"
                                     name="category"
-                                    placeholder="Digite ou selecione uma categoria"
-                                    value={formData.category}
+                                    placeholder="Digite para adicionar uma categoria"
+                                    value={formData.categoryInput || ''}
                                     onChange={handleCategoryChange}
                                     onFocus={handleCategoryFocus}
                                     onBlur={handleCategoryBlur}
                                     autoComplete="off"
-                                    required
                                 />
                                 {showCategoryList && filteredCategories.length > 0 && (
                                     <div className="category-list">
@@ -496,7 +549,7 @@ const Services = () => {
                         <FaSearch className="search-icon" />
                         <input
                             type="text"
-                            placeholder="Pesquisar serviços..."
+                            placeholder="Pesquisar por nome, categoria, SKU, preço..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -509,7 +562,10 @@ const Services = () => {
                                     <img src={`http://localhost:3000${service.image}`} alt={service.name} />
                                 )}
                                 <h3>{service.name}</h3>
-                                <p>Categoria: {service.category}</p>
+                                <p>Categoria: {Array.isArray(service.category) ? 
+                                    service.category.join(" • ") : 
+                                    service.category}
+                                </p>
                                 <p>Preço: €{service.price}</p>
                                 <p>Tempo Estimado: {service.estimatedTime}</p>
                                 <p>Status: {service.status === 'available' ? 'Ativo' : 'Inativo'}</p>

@@ -10,8 +10,8 @@ exports.getAllServices = async (req, res) => {
             s,                          // termo de pesquisa
             sortBy = 'name',           // campo para ordenação
             order = 'asc',             // direção da ordenação
-            page = 1,                  // página atual
-            limit = 6,                 // itens por página
+            page,                      // página atual
+            limit,                     // itens por página
             category,                  // filtro por categoria
             minPrice,                  // preço mínimo
             maxPrice,                  // preço máximo
@@ -48,6 +48,15 @@ exports.getAllServices = async (req, res) => {
         }
 
         const sortOrder = order === 'desc' ? -1 : 1;
+        
+        // Se não houver página ou limite especificado, retorna todos os serviços
+        if (!page || !limit) {
+            const services = await Service.find(query).sort({ [sortBy]: sortOrder });
+            return res.status(200).json({
+                success: true,
+                message: services
+            });
+        }
         
         // Calcular total de documentos e páginas
         const total = await Service.countDocuments(query);
@@ -106,14 +115,22 @@ exports.createService = (req, res) => {
         try {
             const { category, name, price, description, estimatedTime, status } = req.body;
 
-            if (!category || !name || !price || !description || !estimatedTime || !status) {
+            // Validar se pelo menos uma categoria foi fornecida
+            if (!category || (Array.isArray(category) && category.length === 0)) {
+                return res.status(400).json({ success: false, message: "Pelo menos uma categoria é obrigatória" });
+            }
+
+            if (!name || !price || !description || !estimatedTime || !status) {
                 return res.status(400).json({ success: false, message: "Preencha os valores obrigatórios" });
             }
 
             const imagePath = req.file ? `/uploads/services/${req.file.filename}` : null;
 
+            // Garantir que category seja sempre um array
+            const categoryArray = Array.isArray(category) ? category : [category];
+
             const service = new Service({
-                category,
+                category: categoryArray,
                 name,
                 price,
                 description,
@@ -154,8 +171,12 @@ exports.updateService = (req, res) => {
                 return res.status(404).json({ success: false, message: "Serviço não encontrado" });
             }
 
+            // Se uma categoria for fornecida, garantir que seja um array
+            if (category) {
+                service.category = Array.isArray(category) ? category : [category];
+            }
+
             // Atualiza os campos, mantendo os existentes se não forem enviados
-            service.category = category || service.category;
             service.name = name || service.name;
             service.price = price || service.price;
             service.description = description || service.description;

@@ -176,7 +176,7 @@ exports.createReserve = async (req, res) => {
         if (err instanceof Error && err.message) { //Captura mensagens de erro personalizadas
             return res.status(400).json({ success: false, message: err.message });
         }
-        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
+        res.status(500).json({success: false, message: "Erro interno no servidor"});
     }
 }
 
@@ -217,14 +217,14 @@ exports.updateReserve = async (req, res) => {
 
         await reserve.save();
 
-        res.status(200).json({sucess: true, message: "Reserva atualizada com sucesso", reserve: reserve});
+        res.status(200).json({success: true, message: "Reserva atualizada com sucesso", reserve: reserve});
 
     }catch(err){
         console.log(err);
         if (err instanceof Error && err.message) {
             return res.status(400).json({ success: false, message: err.message });
         }
-        res.status(500).json({sucess: false, message: "Erro interno no servidor"});
+        res.status(500).json({success: false, message: "Erro interno no servidor"});
     }
 };
 
@@ -236,10 +236,10 @@ exports.deleteReserve = async (req, res) => {
             
         await Reserve.findByIdAndDelete(reserve._id);
             
-        res.status(200).json({ sucess: true, message: "Reserva removida com sucesso" });
+        res.status(200).json({ success: true, message: "Reserva removida com sucesso" });
     
     }catch(err){
             console.log(err);
-            res.status(500).json({ sucess: false, message: "Erro interno do servidor" });
+            res.status(500).json({ success: false, message: "Erro interno do servidor" });
     }
 }

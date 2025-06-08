@@ -391,14 +391,7 @@ function Reserves() {
                                 />
                             </div>
                             <div className="modal-buttons">
-                                <button type="submit" className="save-button"
-                                    onClick={() => {
-                                        setShowEditModal(false);
-                                        setEditingReserve(null);
-                                    }}
-                                    >
-                                        Salvar
-                                </button>
+                                <button type="submit" className="save-button">Salvar</button>
                                 <button 
                                     type="button" 
                                     className="cancel-button"
