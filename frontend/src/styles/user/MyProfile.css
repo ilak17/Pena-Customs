@@ -143,6 +143,18 @@
   box-shadow: 0 0 0 3px rgba(146, 40, 26, 0.2);
 }
 
+.btn:focus-visible {
+    outline: 3px solid #e74c3c;
+    outline-offset: 2px;
+}
+
+.form-input:focus-visible {
+    outline: 3px solid #e74c3c;
+    outline-offset: 2px;
+    box-shadow: none;
+    border-color: transparent;
+}
+
 .action-buttons {
   display: flex;
   gap: 1rem;
@@ -306,4 +318,106 @@
   .action-buttons .btn {
     width: 100%;
   }
-} 
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .btn::before,
+    .btn:hover {
+        transition: none;
+    }
+    
+    .profile-section::before {
+        animation: none;
+    }
+}
+
+/* Loading state animation */
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+.loading {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Loading state skeleton animation */
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+.profile-section.loading .form-group label,
+.profile-section.loading .form-value {
+    background: linear-gradient(90deg, 
+        rgba(255, 255, 255, 0.05) 25%, 
+        rgba(255, 255, 255, 0.1) 50%, 
+        rgba(255, 255, 255, 0.05) 75%);
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite linear;
+    border-radius: 8px;
+    color: transparent;
+}
+
+.profile-section.loading .form-group label {
+    height: 16px;
+    width: 40%;
+}
+
+.profile-section.loading .form-value {
+    height: 24px;
+}
+
+/* Smooth transitions for state changes */
+.profile-section {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-input {
+    transition: border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Success message animation */
+@keyframes slideIn {
+    0% {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.success-message {
+    animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    padding: 1rem;
+    background: rgba(46, 213, 115, 0.1);
+    border: 1px solid rgba(46, 213, 115, 0.3);
+    color: #ffffff;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.success-message::before {
+    content: '✓';
+    background: rgba(46, 213, 115, 0.2);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
