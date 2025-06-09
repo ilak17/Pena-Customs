@@ -9,8 +9,6 @@ import RecoverPassword from './pages/auth/RecoverPassword';
 import ResetPassword from './pages/auth/ResetPassword';
 import MyProfile from './pages/user/MyProfile';
 import MyVehicles from './pages/user/MyVehicles';
-import AddVehicle from './pages/user/AddVehicle';
-import EditVehicle from './pages/user/EditVehicle';
 import CreateReserve from './pages/user/CreateReserve';
 import Services from './pages/Services';
 import MyReserves from './pages/user/MyReserves';
@@ -31,8 +29,6 @@ function App() {
           <Route path="/alterar-password/:resetToken" element={<ResetPassword />} />
           <Route path="/perfil" element={<MyProfile />} />
           <Route path="/meus-veiculos" element={<MyVehicles />} />
-          <Route path="/adicionar-veiculo" element={<AddVehicle />} />
-          <Route path="/editar-veiculo/:plate" element={<EditVehicle />} />
           <Route path="/marcar-reserva" element={<CreateReserve />} />
           <Route path="/servicos" element={<Services />} />
           <Route path="/minhas-reservas" element={<MyReserves />} />

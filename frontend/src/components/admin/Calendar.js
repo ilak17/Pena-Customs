@@ -7,6 +7,8 @@ import ptLocale from '@fullcalendar/core/locales/pt';
 import '../../styles/admin/Calendar.css';
 
 function Calendar() {
+    // Configurar timezone para Portugal
+    const timeZone = 'Europe/Lisbon';
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -44,16 +46,21 @@ function Calendar() {
                     // Extrair a matrícula do veículo com fallback
                     const vehiclePlate = reserve.vehicleID?.plate || 'Veículo não especificado';
 
+                    // Ajustar as horas para o fuso horário local
+                    const startDate = new Date(reserve.startTime);
+                    const endDate = new Date(reserve.endTime);
+
                     const status = reserve.status || 'pending';
 
                     return {
                         id: reserve._id,
-                        title: `${clientName} - ${serviceNames}`,
-                        start: reserve.startTime,
-                        end: reserve.endTime,
+                        title: `#${reserve.sku} - ${clientName} - ${serviceNames}`,
+                        start: startDate,
+                        end: endDate,
                         display: 'block',
                         allDay: false,
                         extendedProps: {
+                            sku: reserve.sku,
                             status: status,
                             client: clientName,
                             services: reserve.serviceID || [],
@@ -119,6 +126,7 @@ function Calendar() {
                 height="auto"
                 slotMinTime="08:00:00"
                 slotMaxTime="20:00:00"
+                timeZone={timeZone}
                 businessHours={{
                     daysOfWeek: [1, 2, 3, 4, 5, 6],
                     startTime: '08:00',
@@ -135,6 +143,10 @@ function Calendar() {
                             <button className="modal-close-btn" onClick={closeModal}>&times;</button>
                         </div>
                         <div className="calendar-modal-content">
+                            <div className="modal-info-group">
+                                <label>SKU:</label>
+                                <p>#{selectedEvent.extendedProps.sku}</p>
+                            </div>
                             <div className="modal-info-group">
                                 <label>Cliente:</label>
                                 <p>{selectedEvent.extendedProps.client}</p>

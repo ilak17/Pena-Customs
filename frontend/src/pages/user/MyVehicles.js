@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import Header from '../../components/Header';
 import '../../styles/user/MyVehicles.css';
 import '../../styles/user/VehicleForm.css';
@@ -71,6 +70,12 @@ const MyVehicles = () => {
             model: vehicle.model
         });
         setEditingVehicle(vehicle);
+        if (vehicle.image) {
+            setPreviewImage(`http://localhost:3000${vehicle.image}`);
+        } else {
+            setPreviewImage(null);
+        }
+        setSelectedImage(null);
     };
 
     const handleAdd = () => {
@@ -146,13 +151,19 @@ const MyVehicles = () => {
     const handleSubmitEdit = async (e) => {
         e.preventDefault();
         try {
+            const formDataToSend = new FormData();
+            formDataToSend.append('brand', formData.brand);
+            formDataToSend.append('model', formData.model);
+            if (selectedImage) {
+                formDataToSend.append('image', selectedImage);
+            }
+
             const response = await fetch(`http://localhost:3000/vehicle/my-vehicles/${editingVehicle.plate}`, {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
-                body: JSON.stringify(formData)
+                body: formDataToSend
             });
 
             const data = await response.json();
@@ -162,6 +173,7 @@ const MyVehicles = () => {
             }
 
             // Atualiza a lista de veículos
+            fetchVehicles();
             setVehicles(vehicles.map(v => 
                 v.plate === editingVehicle.plate 
                     ? { ...v, ...formData }
@@ -282,6 +294,25 @@ const MyVehicles = () => {
                                     onChange={handleChange}
                                     required
                                 />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="image">Imagem do Veículo:</label>
+                                <input
+                                    type="file"
+                                    id="image"
+                                    name="image"
+                                    accept="image/jpeg,image/png,image/jpg"
+                                    onChange={handleImageChange}
+                                />
+                                {(previewImage || (editingVehicle && editingVehicle.image)) && (
+                                    <div className="image-preview">
+                                        <img 
+                                            src={previewImage || `http://localhost:3000${editingVehicle.image}`} 
+                                            alt="Preview" 
+                                            style={{ maxWidth: '200px' }} 
+                                        />
+                                    </div>
+                                )}
                             </div>
                             <div className="form-actions">
                                 <button 
